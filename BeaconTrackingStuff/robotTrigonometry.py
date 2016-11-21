@@ -8,6 +8,11 @@ import cv2
 #Many of our calculations require this value, so it is important that it != null
 #We should probably have this as a global ROS variable, because of its importance
 k = 1.0
+#These are used in calculating camera angles
+cameraCenterX = 319.5 # (camera pixel width - 1) / 2
+cameraCenterY = 119.5 # (camera pixel height - 1) / 2
+focalLengthP = 555 # (camera pixel width - 2) / ( 2 * tan( FOV / 2) )
+#focalLengthYP = 555 # (camera pixel height - 1) / ( 2 * tan( FOV / 2) )
 
 #Sam Wilson 10/16/16
 def getRobotCoords(leftAngle, rightAngle, k = k):
@@ -145,3 +150,26 @@ def getCameraAngles():
     cameraAngles['rightAngle'] = 180 - cameraAngles['rightAngle']
     
     return cameraAngles
+
+#Sam Wilson 11/21/2016
+def calculateAdjustedAngles(servoYawAngle, servoPitchAngle, xCoord, yCoord):
+    #This function is the core of beacon tracking. It calculates the angle the
+    #camera would have to turn to face an object it detects. When combined with
+    #the servo angle, it gives us an accurate estimate of what direction the
+    #servo would be at to be facing the object. Very important for other formulas.
+
+    #Calculates offset. Requires camerCenters and focal length to be calculated.
+    #Sam has the formulas to calculate those things.
+    yawOffset = math.arctan((xCoord - cameraCenterX) / focalLengthP)
+    pitchOffset = math.arctan((yCoord - cameraCenterY) / focalLengthP)
+
+    #The signs on these lines will depend on the positive and negative directions
+    #of the servos. Once the hardware is in place, final testing can be done.
+    adjustedYaw = servoYawAngle - yawOffset
+    adjustedPitch = servoPitchAngle - pitchOffset
+
+    #Stores the values in a dictionary so we can access values via common names.
+    adjustedAngles = { 'yaw': adustedYaw,
+                       'pitch': adjustedPitch }
+
+    return adjustedAngles
