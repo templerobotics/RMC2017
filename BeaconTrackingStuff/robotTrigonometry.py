@@ -15,6 +15,7 @@ focalLengthP = 555 # (camera pixel width - 2) / ( 2 * tan( FOV / 2) )
 #focalLengthYP = 555 # (camera pixel height - 1) / ( 2 * tan( FOV / 2) )
 
 #Sam Wilson 10/16/16
+#DEPRECATED, SEE BELOW
 def getRobotCoords(leftAngle, rightAngle, k = k):
     #Determines the robots coordinates in an xy plane with the beacon at the origin.
     #Everything in the arena has a positive x coordinate, with the mining area being at the "right" end
