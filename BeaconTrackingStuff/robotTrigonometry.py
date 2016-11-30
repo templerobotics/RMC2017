@@ -173,3 +173,47 @@ def calculateAdjustedAngles(servoYawAngle, servoPitchAngle, xCoord, yCoord):
                        'pitch': adjustedPitch }
 
     return adjustedAngles
+
+#Sam Wilson 11/29/2016
+def medianFormula( leg_m, leg_n, base):
+	# 1/2 * sqrt(2*m^2 + 2*n^2 - k^2)
+	return 0.5 * math.sqrt(2 * leg_m ** 2 + 2 * leg_n ** 2 - base ** 2)
+
+#Sam Wilson 11/29/2016
+def getRobotCoordinates( k, K, alpha, beta, gamma, delta, inRadians):
+	
+	#Convert angles to radians
+	if not inRadians:
+		alpha = math.radians(alpha)
+		beta = math.radians(beta)
+		gamma = math.radians(gamma)
+		delta = math.radians(delta)
+
+	#Calculate legs of minor triangles
+	a = (k * sin(beta)) / math.sin(alpha + pi - beta)
+	b = (k * sin(alpha)) / math.sin(alpha + pi - beta)
+	c = (k * sin(delta)) / math.sin(gamma + pi - delta)
+	d = (k * sin(gamma)) / math.sin(gamma + pi - delta)
+
+	#Calculate medians of minor triangles
+	M = medianFormula( a, b, k)
+	N = medianFormula( c, d, k)
+
+	#Calculate median of major triangle
+	P = medianFormula( M, N, K)
+
+	#Calculates semiperimeter and area of major triangle
+	g = (M + N + K) / 2.0
+	A = math.sqrt( g * (g - M) * (g - N) * (g - K) )
+
+	#X coordinate
+	J = 2.0 * A / K
+
+	#Y coordinate
+	S = math.sqrt(P ** 2 - J ** 2)
+
+	#Sign correction of Y coordinate
+	if M > N:
+		S = S * -1
+
+	return (J, S)
