@@ -2,6 +2,10 @@
 #Sam Wilson 11/30/2016
 #See Sam for questions
 import cv2
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+
+#=============================Simplified Versions of Common Functions=========================
 
 #Simplified grayscale function, assumes input is BGR
 def toGray(image):
@@ -29,6 +33,9 @@ def edgeDetect(image, preBlurred = False):
 def getContours(image):
     contours, _ = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     return contours
+
+
+#============================Custom Tools to Make Life Easier=================================
 
 #Used on binary images to remove blobs too big to be removed by blurring
 def removeSmallWhiteBlobs(image, aggressiveness = 4):
@@ -75,3 +82,13 @@ def identifyShape(contour, circleLimit = 10):
     elif nVertices == 10:
         shape = 'decagon'
     return shape
+
+#==========================Tools for making OpenCV and ROS work together======================
+
+#Converts sensor_msgs.msg/Image to OpenCV Mat
+def ImgMsg2Mat(img_msg):
+    return bridge.imgmsg_to_cv2(img_msg, desired_encoding='passthrough')
+
+#Converts OpenCV Mat to sensor_msgs.msg/Image
+def Mat2ImgMsg(mat):
+    return cv2_to_imgmsg(mat, encoding = 'passthrough'
