@@ -2,6 +2,7 @@
 #Sam Wilson 11/30/2016
 #See Sam for questions
 import cv2
+import global-constants as gc
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -91,4 +92,30 @@ def ImgMsg2Mat(img_msg):
 
 #Converts OpenCV Mat to sensor_msgs.msg/Image
 def Mat2ImgMsg(mat):
-    return cv2_to_imgmsg(mat, encoding = 'passthrough'
+    return cv2_to_imgmsg(mat, encoding = 'passthrough')
+
+#==========================================Classes============================================
+
+class RobotCameras():
+    def __init__(self):
+        self._sCam = cv2.VideoCapture(gc.STAR_CAMERA_INDEX)
+        self._pCam = cv2.VideoCapture(gc.PORT_CAMERA_INDEX)
+
+    def getStarImage(self):
+        sImage = self._sCam.grab()
+        sImage = self._sCam.retrieve(sImage)
+        return sImage
+
+    def getPortImage(self):
+        pImage = self._pCam.grab()
+        pImage = self._pCam.retrieve(pImage)
+        return pImage
+
+    def getImages(self):
+        sImage = self.getStarImage()
+        pImage = self.getPortImage()
+        return sImage, pImage
+
+    def release(self):
+        self._sCam.release()
+        self._pCam.release()
