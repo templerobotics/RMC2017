@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+#Sam Wilson 11/30/2016
+#See Sam for questions
 import cv2
 
 #Simplified grayscale function, assumes input is BGR
