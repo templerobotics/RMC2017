@@ -14,6 +14,7 @@ lower_G = np.array([50, 50, 50], dtype = np.uint8)
 upper_G = np.array([70, 255, 255], dtype = np.uint8)
 
 cv2.namedWindow('Test', cv2.WINDOW_NORMAL)
+cv2.namedWindow('Base', cv2.WINDOW_NORMAL)
 
 while True:
 
@@ -34,10 +35,11 @@ while True:
     bgThresh = cv2.bitwise_or(bThresh, gThresh, mask = maskH)
     bgrThresh = cv2.bitwise_or(bgThresh, rThresh, mask = maskH)
 
-    #bgrThresh = cv2.dilate(bgrThresh, None, iterations = 2)
-    #bgrThresh = cv2.erode(bgrThresh, None, iterations = 4)
+    bgrThresh = cv2.dilate(bgrThresh, None, iterations = 4)
+    bgrThresh = cv2.erode(bgrThresh, None, iterations = 4)
 
     cv2.imshow('Test', bgrThresh)
+    cv2.imshow('Base', frame)
 
     if cv2.waitKey(30) == 27:
         break
