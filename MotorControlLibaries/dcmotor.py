@@ -23,3 +23,4 @@ class DCmotor:
 D = DCmotor()
 D.dcmotorrun()
 
+#Still incomplete until I get a chance to actually test this
