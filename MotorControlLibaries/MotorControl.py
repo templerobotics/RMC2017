@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#Sam Wilson 1/22/17
+#Takeover version
+
 import pigpio
 import wavePWM
 import subprocess
