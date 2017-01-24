@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Sam Wilson 1/22/17
+#Sam Wilson 1/24/17
 #Takeover version
 
 import pigpio
@@ -105,6 +105,32 @@ class SabretoothDCMotor:
         self._currentPulseWidth = targetSpeed
 
         return targetSpeed
+
+#Possible template for the stepper motor controller
+class StepperMotor():
+    def __init__(self):
+
+    def __del__(self):
+
+    def turnOn(self):
+
+    def turnOff(self):
+
+#Possible template for the linear actuator controller
+class LinearActuator():
+    def __init__(self):
+        self._isExtended = False
+
+    def __del__(self):
+
+    def isExtended(self):
+        return self._isExtended
+
+    def extend(self):
+        self._isExtended = True
+
+    def retract(self):
+        self._isExtended = False
 
 #Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors. 
 #For single joystick, use arcadeDrive; for dual joystick use tankDrive.
