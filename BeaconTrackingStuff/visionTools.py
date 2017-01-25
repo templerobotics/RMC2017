@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-#Sam Wilson 11/30/2016
+#Sam Wilson 1/25/2017
 #See Sam for questions
 import cv2
-import global-constants as gc
+import globalConstants as gc
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -96,10 +96,15 @@ def Mat2ImgMsg(mat):
 
 #==========================================Classes============================================
 
+#Make sure to release or delete this object so that other scripts can use the cameras
 class RobotCameras():
     def __init__(self):
         self._sCam = cv2.VideoCapture(gc.STAR_CAMERA_INDEX)
         self._pCam = cv2.VideoCapture(gc.PORT_CAMERA_INDEX)
+
+    def __del__(self):
+        self._sCam.release()
+        self._pCam.release()
 
     def getStarImage(self):
         sImage = self._sCam.grab()
