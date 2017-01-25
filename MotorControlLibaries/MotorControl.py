@@ -106,31 +106,85 @@ class SabretoothDCMotor:
 
         return targetSpeed
 
-#Possible template for the stepper motor controller
-class StepperMotor():
-    def __init__(self):
+class LinearActuator:
 
+    #The pin number should be the BCM/GPIO pin number
+    def __init__(self, pin, invertDirections = False):
+        self._pin = pin
+            
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+        self._wave.set_cycle_time(3000)
+
+        self._currentPulseWidth = 1500
+
+        if invertDirections:
+            self._extendValue = 2000
+            self._retractValue = 1000
+        else:
+            self._extendValue = 1000
+            self._retractValue = 2000
+        
+        self._wave.set_pulse_length_in_micros(self._pin, 1500)
+        self._wave.update()
+        self._isSuspended = False
+
+    #Makes sure to stop the motor and cancel the PWM before garbage collection
     def __del__(self):
+        self.suspend()
 
-    def turnOn(self):
+    #Stops the calling object from generating PWM signals. Stopping safely means setting the speed to 0 before suspending
+    def suspend(self, safely = True):
+        if not self._isSuspended:
+            if safely:
+                self.setSpeed(0.0)
+            self._wave.cancel()
+            self._isSuspended = True
 
-    def turnOff(self):
+    #Reinitializes the actuator object after having been suspended
+    def resume(self, resumeSpeed = False):
+        if self._isSuspended:
+            self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+            self._wave.set_cycle_time(3000)
+            self._isSuspended = False
+            if resumeSpeed:
+                self.setSpeed(self.getSpeed)
+            else:
+                self.setSpeed(0.0)
 
-#Possible template for the linear actuator controller
-class LinearActuator():
-    def __init__(self):
+    def extend(self):
+        if self._isSuspended:
+            self.resume()
+
+        self._wave.set_pulse_length_in_micros(self._pin, self._extendValue)
+        self._wave.update()
+
+        self._isExtended = True
+        self._state = 'extended'
+
+    def retract(self):
+        if self._isSuspended:
+            self.resume()
+
+        self._wave.set_pulse_length_in_micros(self._pin, self._retractValue)
+        self._wave.update()
+
         self._isExtended = False
+        self._state = 'retracted'
 
-    def __del__(self):
+    def idle(self):
+        if self._isSuspended:
+            self.resume()
+            
+        self._wave.set_pulse_length_in_micros(self._pin, 1500)
+        self._wave.update()
+
+        self._state = 'idle'
 
     def isExtended(self):
         return self._isExtended
 
-    def extend(self):
-        self._isExtended = True
-
-    def retract(self):
-        self._isExtended = False
+    def getState(self):
+        return self._state
 
 #Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors. 
 #For single joystick, use arcadeDrive; for dual joystick use tankDrive.
