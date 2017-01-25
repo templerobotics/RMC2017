@@ -27,8 +27,7 @@ class SabretoothDCMotor:
 
         self._currentPulseWidth = 1500
         
-        self._wave.set_pulse_length_in_micros(self._pin, 1500)
-        self._wave.update()
+        self.setSpeed(0.0)
         self._isSuspended = False
 
     #Makes sure to stop the motor and cancel the PWM before garbage collection
@@ -106,6 +105,7 @@ class SabretoothDCMotor:
 
         return targetSpeed
 
+#For use with linear actuators via Sabretooth controllers. Sabretooth should be in RC microcontroller mode
 class LinearActuator:
 
     #The pin number should be the BCM/GPIO pin number
@@ -124,8 +124,7 @@ class LinearActuator:
             self._extendValue = 1000
             self._retractValue = 2000
         
-        self._wave.set_pulse_length_in_micros(self._pin, 1500)
-        self._wave.update()
+        self.idle()
         self._isSuspended = False
 
     #Makes sure to stop the motor and cancel the PWM before garbage collection
@@ -136,21 +135,25 @@ class LinearActuator:
     def suspend(self, safely = True):
         if not self._isSuspended:
             if safely:
-                self.setSpeed(0.0)
+                self.idle()
             self._wave.cancel()
             self._isSuspended = True
 
     #Reinitializes the actuator object after having been suspended
-    def resume(self, resumeSpeed = False):
+    def resume(self, resumeState = False):
         if self._isSuspended:
             self._wave = wavePWM.PWM(PIGPIO_DAEMON)
             self._wave.set_cycle_time(3000)
             self._isSuspended = False
-            if resumeSpeed:
-                self.setSpeed(self.getSpeed)
-            else:
-                self.setSpeed(0.0)
+            if resumeState:
+                if self._isExtended:
+                    self.extend()
+                elif not self._isExtended:
+                    self.retract()
+                else:
+                    self.idle()
 
+    #Sets the actuator to the extended value at maximum available speed
     def extend(self):
         if self._isSuspended:
             self.resume()
@@ -161,6 +164,7 @@ class LinearActuator:
         self._isExtended = True
         self._state = 'extended'
 
+    #Sets the actuator to the retract value at maximum available speed
     def retract(self):
         if self._isSuspended:
             self.resume()
@@ -171,6 +175,7 @@ class LinearActuator:
         self._isExtended = False
         self._state = 'retracted'
 
+    #Leaves the actuator in whichever position it was in, but deactivates its resistance force
     def idle(self):
         if self._isSuspended:
             self.resume()
@@ -180,9 +185,11 @@ class LinearActuator:
 
         self._state = 'idle'
 
+    #Returns a boolean value of whether or not the actuator is extended. If called right after __init__ and before any calls to extend or retract, the value of isExtended will be None
     def isExtended(self):
         return self._isExtended
 
+    #Returns one of three strings describing the current state: 'extended', 'retracted', or 'idle'
     def getState(self):
         return self._state
 
@@ -202,7 +209,7 @@ class RobotDrive:
 
     #Use for a single joystick setup controlling a tank-style drivetrain
     #See http://home.kendra.com/mauser/Joystick.html for the math behind this
-    def arcadeDrive(self, rawStickX, rawStickY, invertX = False, invertY = True, swapVW = False, swapRL = False):
+    def arcadeDrive(self, rawStickX, rawStickY, invertX = False, invertY = True, swapVW = False, swapRL = True):
         if invertX:
             rawStickX *= -1.0
         if invertY:
