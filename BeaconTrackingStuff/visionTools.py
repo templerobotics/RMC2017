@@ -88,7 +88,7 @@ def identifyShape(contour, circleLimit = 10):
 
 #Converts sensor_msgs.msg/Image to OpenCV Mat
 def ImgMsg2Mat(img_msg):
-    return bridge.imgmsg_to_cv2(img_msg, desired_encoding='passthrough')
+    return bridge.imgmsg_to_cv2(img_msg, desired_encoding = 'passthrough')
 
 #Converts OpenCV Mat to sensor_msgs.msg/Image
 def Mat2ImgMsg(mat):
