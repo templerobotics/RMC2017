@@ -15,18 +15,21 @@ except:
     #Starts the pigpio daemon if pigpio fails to bind to the pi
     subprocess.call("sudo pigpiod", shell=True)
 
+def LinearActuator(pin):
+    return SabretoothLinearActuator(pin)
+
 #For use with DC motors via Sabretooth controllers. Sabretooth should be in RC microcontroller mode
 class SabretoothDCMotor:
-    
+
     #The pin number should be the BCM/GPIO pin number
     def __init__(self, pin):
         self._pin = pin
-            
+
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
         self._wave.set_cycle_time(3000)
 
         self._currentPulseWidth = 1500
-        
+
         self.setSpeed(0.0)
         self._isSuspended = False
 
@@ -106,12 +109,12 @@ class SabretoothDCMotor:
         return targetSpeed
 
 #For use with linear actuators via Sabretooth controllers. Sabretooth should be in RC microcontroller mode
-class LinearActuator:
+class SabretoothLinearActuator:
 
     #The pin number should be the BCM/GPIO pin number
     def __init__(self, pin, invertDirections = False):
         self._pin = pin
-            
+
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
         self._wave.set_cycle_time(3000)
 
@@ -123,7 +126,7 @@ class LinearActuator:
         else:
             self._extendValue = 1000
             self._retractValue = 2000
-        
+
         self.idle()
         self._isSuspended = False
 
@@ -179,11 +182,20 @@ class LinearActuator:
     def idle(self):
         if self._isSuspended:
             self.resume()
-            
+
         self._wave.set_pulse_length_in_micros(self._pin, 1500)
         self._wave.update()
 
         self._state = 'idle'
+
+    #Inverts the extend and retract values of this actuator
+    def invert(self):
+        if self._extendValue == 1000:
+            self._extendValue = 2000
+            self._retractValue = 1000
+        else:
+            self._extendValue = 1000
+            self._retractValue = 2000
 
     #Returns a boolean value of whether or not the actuator is extended. If called right after __init__ and before any calls to extend or retract, the value of isExtended will be None
     def isExtended(self):
@@ -193,9 +205,9 @@ class LinearActuator:
     def getState(self):
         return self._state
 
-#Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors. 
+#Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors.
 #For single joystick, use arcadeDrive; for dual joystick use tankDrive.
-class RobotDrive:
+class RobotDrivetrain:
 
     #Any two motor objects can be used, so long as they have updateSpeed() and suspend() methods
     def __init__(self, rightMotor, leftMotor):
@@ -245,3 +257,102 @@ class RobotDrive:
         self._leftMotor.setSpeed(rawStickLeft)
 
         return (rawStickRight, rawStickLeft)
+
+#Allows a number of actuators to be controlled as a group
+class ActuatorGroup:
+
+    #The actuatorList can be a standard list, tuple, or dictionary of LinearActuator objects
+    def __init__(self, actuatorList, invertDirections = False):
+        self._actuators = actuatorList
+        self.idleAll()
+
+    #Makes sure to stop the actuators and cancel the PWM before garbage collection
+    def __del__(self):
+        for actuator in self._actuators:
+            del actuator
+
+    #Stops a specific actuator from generating PWM signals. Stopping safely means setting the speed to 0 before suspending
+    def suspend(self, index = 'all', safely = True):
+        if index == 'all':
+            self.suspendAll(safely)
+        else:
+            actuator = self._actuators[index]
+            actuator.suspend(safely)
+
+    #Stops all actuators from generating PWM signals. Stopping safely means setting the speed to 0 before suspending
+    def suspendAll(self, safely = True):
+        for actuator in self._actuators:
+            actuator.suspend(safely)
+
+    #Reinitializes the actuator object after having been suspended
+    def resume(self, index = 'all', resumeState = False):
+        if index == 'all':
+            self.resumeAll(resumeState)
+        else:
+            actuator = self._actuators[index]
+            actuator.resume(resumeState)
+
+    #Reinitializes all actuator objects after suspension
+    def resumeAll(self, resumeState = False):
+        for actuator in self._actuators:
+            actuator.resume(resumeState)
+
+    #Sets a specific actuator to the extended value
+    def extend(self, index = 'all'):
+        if index == 'all':
+            self.extendAll()
+        else:
+            actuator = self._actuators[index]
+            actuator.extend()
+
+    #Sets all actuators to the extended value
+    def extendAll(self):
+        for actuator in self._actuators:
+            actuator.extend()
+
+    #Sets a specific actuator to the retracted value
+    def retract(self, index = 'all'):
+        if index == 'all':
+            self.retractAll()
+        else:
+            actuator = self._actuators[index]
+            actuator.retract()
+
+    #Sets all actuators to the retract value
+    def retractAll(self):
+        for actuator in self._actuators:
+            actuator.retract()
+
+    #Sets a specific actuator to idle
+    def idle(self, index = 'all'):
+        if index == 'all':
+            self.idleAll()
+        else:
+            actuator = self._actuators[index]
+            actuator.idle()
+
+    #Sets all actuators to idle
+    def idleAll(self):
+        for actuator in self._actuators:
+            actuator.idle()
+
+    #Inverts the directions of all actuators
+    def invert(self, index = 'all'):
+        if index == 'all':
+            self.invertAll()
+        else:
+            actuator = self._actuators[index]
+            actuator.invert()
+
+    #Inverts the directions of all actuators
+    def invertAll(self):
+        for actuator in self._actuators:
+            actuator.invert()
+
+    #Returns a boolean value of whether or not the actuator is extended. If called right after __init__ and before any calls to extend or retract, the value of isExtended will be None
+    def isExtended(self, index):
+        return self._actuators[index].isExtended()
+
+    #Returns one of three strings describing the current state: 'extended', 'retracted', or 'idle'
+    def getState(self, index):
+        return self._actuators[index].getState()
