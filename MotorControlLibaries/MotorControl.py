@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Sam Wilson 1/24/17
+#Sam Wilson 1/27/17
 #Takeover version
 
 import pigpio
