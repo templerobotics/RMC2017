@@ -15,8 +15,80 @@ except:
     #Starts the pigpio daemon if pigpio fails to bind to the pi
     subprocess.call("sudo pigpiod", shell=True)
 
+#Legacy handle for SabretoothLinearActuator, which used to be LinearActuator
 def LinearActuator(pin):
     return SabretoothLinearActuator(pin)
+
+#A generic PWM generator object. Useful for testing
+class PWMWave:
+
+    #The pin number should be the BCM/GPIO pin number
+    def __init__(self, pin):
+        self._pin = pin
+
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+
+        self._wave.set_cycle_time(1000)
+        self._wave.set_pulse_length_in_micros(self._pin, 500)
+
+        self._wave.update()
+
+        self._cycleTime = 1000
+        self._frequency = 1000
+
+        self._pulseWidth = 500
+        self._dutyCycle = 0.5
+
+    def __del__(self):
+        self._wave.cancel()
+
+    #Sets the frequency in Hertz
+    def setFrequency(self, frequency):
+        self._wave.set_frequency(frequency)
+        self._wave.update()
+
+        self._frequency = frequency
+        self._cycleTime = 1000000.0 / self._frequency
+
+    #Sets the cycle time in microseconds
+    def setCycleTime(self, time):
+        self._wave.set_cycle_time(time)
+        self._wave.update()
+
+        self._cycleTime = time
+        self._frequency = 1000000.0 / self._cycleTime
+
+    #Sets the duty cycle as a value from 0.0 to 1.0
+    def setDutyCycle(self, fraction):
+        self._wave.set_pulse_length_in_fraction(self._pin, fraction)
+        self._wave.update()
+
+        self._dutyCycle = fraction
+        self._pulseWidth = self._cycleTime * fraction
+
+    #Sets the length of the pulse in microseconds
+    def setPulseTime(self, time):
+        self._wave.set_pulse_length_in_micros(self._pin, time)
+        self._wave.update()
+
+        self._pulseWidth = time
+        self._dutyCycle = self._cycleTime / self._pulseWidth
+
+    #Returns wave frequency in Hertz
+    def getFrequency(self):
+        return self._frequency
+
+    #Returns cycle time in microseconds
+    def getCycleTime(self):
+        return self._cycleTime
+
+    #Returns duty cycle as a value from 0.0 to 1.0
+    def getDutyCycle(self):
+        return self._dutyCycle
+
+    #Returns pulse time in microseconds
+    def getPulseTime(self):
+        return self._pulseWidth
 
 #For use with DC motors via Sabretooth controllers. Sabretooth should be in RC microcontroller mode
 class SabretoothDCMotor:
