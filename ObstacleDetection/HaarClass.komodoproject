@@ -4,5 +4,6 @@
 <file id="5ff7d77d-ba51-4fa8-b637-164c7b701c93" idref="dc290472-d077-4fa8-a455-d3741615dc99" name="ImageResizer.py" url="ImageResizer.py">
 </file>
 <preference-set idref="dc290472-d077-4fa8-a455-d3741615dc99" id="project" preftype="project">
+  <long id="prefs_version">1</long>
 </preference-set>
 </project>
