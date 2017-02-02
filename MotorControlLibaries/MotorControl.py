@@ -39,8 +39,12 @@ class PWMWave:
         self._pulseWidth = 500
         self._dutyCycle = 0.5
 
+    #Cleanly ends the wave
     def __del__(self):
         self._wave.cancel()
+
+    def stop(self):
+        del self
 
     #Sets the frequency in Hertz
     def setFrequency(self, frequency):
@@ -50,6 +54,8 @@ class PWMWave:
         self._frequency = frequency
         self._cycleTime = 1000000.0 / self._frequency
 
+        self.setDutyCycle(self.getDutyCycle())
+
     #Sets the cycle time in microseconds
     def setCycleTime(self, time):
         self._wave.set_cycle_time(time)
@@ -57,6 +63,8 @@ class PWMWave:
 
         self._cycleTime = time
         self._frequency = 1000000.0 / self._cycleTime
+
+        self.setDutyCycle(self.getDutyCycle())
 
     #Sets the duty cycle as a value from 0.0 to 1.0
     def setDutyCycle(self, fraction):
@@ -276,6 +284,72 @@ class SabretoothLinearActuator:
     #Returns one of three strings describing the current state: 'extended', 'retracted', or 'idle'
     def getState(self):
         return self._state
+
+class MicrostepStepperMotor:
+
+    def __init__(self, stepPin, dirPin):
+        self._stepPin = stepPin
+        self._dirPin = dirPin
+
+        self._direction = 1
+        PIGPIO_DAEMON.write(self._dirPin, self._direction)
+
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+
+        self._isSuspended = False
+
+    #Safely cancels the pwm wave before deletion
+    def __del__(self):
+        self._wave.cancel()
+
+    #Added for ease of programming
+    def _update(self):
+        self._wave.set_pulse_length_in_fraction(self._stepPin, 0.5)
+        self._wave.update()
+
+    #Deactivates the stepper motor pwm, which should halt the motor
+    def suspend(self):
+        self._wave.cancel()
+        self._isSuspended = True
+
+    #Reinitializes the pwm object without restarting the pwm wave
+    def resume(self):
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+        self._isSuspended = False
+
+    #def setSpeed(self, speed):
+        #Lowest value for cycleTime == 4, Max value requires testing to find stop point
+        #Also,
+
+    #Temporary placeholder while the math for setSpeed is calculated
+    def fullSpeed(self):
+        if self._isSuspended:
+            self.resume()
+
+        self._wave.set_cycle_time(4)
+        self._update()
+
+    #Temporary placeholder while the math for setSpeed is calculated
+    def slowSpeed(self):
+        if self._isSuspended:
+            self.resume()
+
+        self._wave.set_cycle_time(500)
+        self._update()
+
+    def reverseDirection(self):
+        self.stop()
+        
+        if self._direction == 1:
+            self._direction = 0
+        else:
+            self._direction = 1
+        PIGPIO_DAEMON.write(self._dirPin, self._direction)
+
+    #Stops the motor by suspending it
+    def stop(self):
+        if not self._isSuspended:
+            self.suspend()
 
 #Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors.
 #For single joystick, use arcadeDrive; for dual joystick use tankDrive.
