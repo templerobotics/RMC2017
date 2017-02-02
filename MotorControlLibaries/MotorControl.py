@@ -321,6 +321,9 @@ class MicrostepStepperMotor:
         #Lowest value for cycleTime == 4, Max value requires testing to find stop point
         #Also,
 
+    #def autoGradient(self):
+        #Will have similar functionality as SabretoothDCMotor.autoGradient(). However, this will require mapping a linear function to a curve
+
     #Temporary placeholder while the math for setSpeed is calculated
     def fullSpeed(self):
         if self._isSuspended:
@@ -339,7 +342,7 @@ class MicrostepStepperMotor:
 
     def reverseDirection(self):
         self.stop()
-        
+
         if self._direction == 1:
             self._direction = 0
         else:
@@ -482,7 +485,7 @@ class ActuatorGroup:
         for actuator in self._actuators:
             actuator.idle()
 
-    #Inverts the directions of all actuators
+    #Inverts the directions of a specific actuator
     def invert(self, index = 'all'):
         if index == 'all':
             self.invertAll()
