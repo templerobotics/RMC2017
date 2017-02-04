@@ -43,6 +43,7 @@ class PWMWave:
     def __del__(self):
         self._wave.cancel()
 
+    #Irreversibly stops this wave
     def stop(self):
         del self
 
