@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Converts a dictionary to a string in the form 'key1:value1;key2:value2;'
+#Converts a dictionary to a string in the form 'key1:type1:value1;key2:type2:value2;'
 def toString(dictionary):
     string = ''
     typeCode = ''
@@ -24,7 +24,7 @@ def toString(dictionary):
 
     return string
 
-#Converts a string of the form 'key1:value1;key2:value2;' to a dictionary of string keys and float values
+#Converts a string of the form 'key1:type1:value1;key2:type2:value2;' to a dictionary of string keys and float values
 def toDict(string):
     dictionary = {}
     pairs = string.split(';')
@@ -45,5 +45,5 @@ def toDict(string):
             dictionary[keyValue[0]] = None
         else:
             dictionary[keyValue[0]] = keyValue[2]
-            
+
     return dictionary
