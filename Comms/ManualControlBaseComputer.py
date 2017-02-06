@@ -22,6 +22,8 @@ def grabJoystickData():
 
     data["joyX"] = j.get_axis(0)
     data["joyY"] = j.get_axis(1)
+    data["throttle"] = j.get_axis(2)
+    data["joyZ"] = j.get_axis(3)
     data["button1"] = j.get_button(0)
     data["button2"] = j.get_button(1)
     data["button3"] = j.get_button(2)
@@ -32,6 +34,8 @@ def grabJoystickData():
     data["button8"] = j.get_button(7)
     data["button9"] = j.get_button(8)
     data["button10"] = j.get_button(9)
+    data["button11"] = j.get_button(10)
+    data["button12"] = j.get_button(11)
 
 while True:
     grabJoystickData()
