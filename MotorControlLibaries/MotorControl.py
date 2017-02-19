@@ -355,14 +355,14 @@ class MicrostepStepperMotor:
         if not self._isSuspended:
             self.suspend()
 
-class SimpleServo:
+class ParallaxServoMotor:
 
     def __init__(self, pin):
 
         self._pin = pin
 
-        self._TIME0 = 1000
-        self._TIME180 = 2000
+        self._TIME0 = 5000
+        self._TIME180 = 2500
 
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
@@ -420,7 +420,136 @@ class SimpleServo:
 
     def getPosition(self):
         return self._timeToDegrees(self._currentPulseWidth())
+
+class HiTecServoMotor:
+
+    def __init__(self, pin):
+
+        self._pin = pin
+
+        self._TIME0 = 553
+        self._TIME180 = 2520
+
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+
+        self._wave.set_cycle_time(4000)
         
+        self._currentPulseWidth = -1
+        
+        #self.setPosition(90)
+        self._isSuspended = False
+
+    #Makes sure to stop the motor and cancel the PWM before garbage collection
+    def __del__(self):
+        self.suspend()
+
+    def _degreesToTime(self, degrees):
+        return (float(degrees / 180.0) * (self._TIME180 - self._TIME0)) + self._TIME0
+
+    def _timeToDegrees(self, time):
+        return float((time - self._TIME0) / (self._TIME180 - self._TIME0)) * 180.0
+
+    #Stops the calling object from generating PPM signals. Stopping safely means setting the position to 90 before suspending
+    def suspend(self, safely = True):
+        if not self._isSuspended:
+            if safely:
+                self.setPosition(90)
+            self._wave.cancel()
+            self._isSuspended = True
+
+    #Reinitializes the motor object after having been suspended
+    def resume(self, resumePosition = False):
+        if self._isSuspended:
+            self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+            self._wave.set_cycle_time(20000)
+            self._isSuspended = False
+            if resumePosition:
+                self.setPosition(self.getPosition())
+            else:
+                self.setPosition(90)
+
+    def setPosition(self, degrees):
+        if self._isSuspended:
+            self.resume()
+
+        if degrees < 0:
+            degrees = 0
+        elif degrees > 180:
+            degrees = 180
+
+        self._currentPulseWidth = self._degreesToTime(degrees)
+
+        self._wave.set_pulse_length_in_micros(self._pin, self._currentPulseWidth)
+        self._wave.update()
+
+        return degrees
+
+    def getPosition(self):
+        return self._timeToDegrees(self._currentPulseWidth())
+
+class VexMotorModule:
+
+    def __init__(self, pin):
+
+        self._pin = pin
+
+        self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+
+        self._wave.set_cycle_time(20000)
+        
+        self._currentPulseWidth = -1
+        
+        self.setSpeed(0.0)
+        self._isSuspended = False
+
+    #Makes sure to stop the motor and cancel the PWM before garbage collection
+    def __del__(self):
+        self.suspend()
+
+    def _speedToTime(self, speed):
+        return (float(speed / 2.0) + 1.5) * 1000.0
+
+    def _timeToSpeed(self, time):
+        return (float(time / 1000.0) * 1.5) - 2.0
+
+    #Stops the calling object from generating PPM signals. Stopping safely means setting the position to 90 before suspending
+    def suspend(self, safely = True):
+        if not self._isSuspended:
+            if safely:
+                self.setSpeed(0.0)
+            self._wave.cancel()
+            self._isSuspended = True
+
+    #Reinitializes the motor object after having been suspended
+    def resume(self, resumePosition = False):
+        if self._isSuspended:
+            self._wave = wavePWM.PWM(PIGPIO_DAEMON)
+            self._wave.set_cycle_time(20000)
+            self._isSuspended = False
+            if resumePosition:
+                self.setSpeed(self.getSpeed())
+            else:
+                self.setPosition(90)
+
+    def setSpeed(self, speed):
+        if self._isSuspended:
+            self.resume()
+
+        if speed < -1.0:
+            speed = -1.0
+        elif speed > 1.0:
+            speed = 1.0
+
+        self._currentPulseWidth = self._speedToTime(degrees)
+
+        self._wave.set_pulse_length_in_micros(self._pin, self._currentPulseWidth)
+        self._wave.update()
+
+        return degrees
+
+    def getSpeed(self):
+        return self._timeToSpeed(self._currentPulseWidth())
+
 #Creates a drivetrain object allowing joystick values to automatically be formatted for the drive motors.
 #For single joystick, use arcadeDrive; for dual joystick use tankDrive.
 class RobotDrivetrain:
