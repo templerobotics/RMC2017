@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Sam Wilson 2/4/17
+#Sam Wilson 2/20/17
 #Takeover version
 
 import pigpio
@@ -521,15 +521,15 @@ class VexMotorModule:
             self._isSuspended = True
 
     #Reinitializes the motor object after having been suspended
-    def resume(self, resumePosition = False):
+    def resume(self, resumeSpeed = False):
         if self._isSuspended:
             self._wave = wavePWM.PWM(PIGPIO_DAEMON)
             self._wave.set_cycle_time(20000)
             self._isSuspended = False
-            if resumePosition:
+            if resumeSpeed:
                 self.setSpeed(self.getSpeed())
             else:
-                self.setPosition(90)
+                self.setSpeed(0.0)
 
     def setSpeed(self, speed):
         if self._isSuspended:
@@ -540,12 +540,12 @@ class VexMotorModule:
         elif speed > 1.0:
             speed = 1.0
 
-        self._currentPulseWidth = self._speedToTime(degrees)
+        self._currentPulseWidth = self._speedToTime(speed)
 
         self._wave.set_pulse_length_in_micros(self._pin, self._currentPulseWidth)
         self._wave.update()
 
-        return degrees
+        return speed
 
     def getSpeed(self):
         return self._timeToSpeed(self._currentPulseWidth())
