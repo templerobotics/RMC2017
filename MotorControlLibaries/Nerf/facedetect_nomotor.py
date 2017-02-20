@@ -35,12 +35,11 @@ def processframe():
 
     
     for (x,y,w,h) in frontal:
-        frontal_rect = (w * h)
-        print(frontal_rect)
+        
         
         center = ( (x+(w/2)), (y+(h/2)))
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0,0,153), 5)	
-        cv2.circle(frame, (center), 3, (0, 0, 255), -1)
+        cv2.circle(frame, (center), 3, (0, 200, 0), -1)
         center = ( (x+(w/2)))
 		#print(center)
         if (center < 320 and center > 160 ):
