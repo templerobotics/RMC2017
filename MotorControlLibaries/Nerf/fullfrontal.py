@@ -26,10 +26,7 @@ def processframe():
     global s
     #grab frame
     retval, frame = cam.read()
-    #frame = cv2.imread('img.png')
-    #frame = camera.GrabNumPyImage(format='bgr')
     
-    #frame = cv2.resize(frame,None,fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
     #Init Haar Frontal Face Classifier
     detect = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     #Alternative Classifier:
@@ -39,7 +36,7 @@ def processframe():
 
     #frontal is an array full of rectangle coords regarding identified objects
     for (x,y,w,h) in frontal:
-        
+        #where (x,y) is upper vertex of rect. w/h is width/height
         #center of rectangle, draw a circle
         center = ( (x+(w/2)), (y+(h/2)))
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0,0,153), 5)	
@@ -58,7 +55,7 @@ def processframe():
         elif (center < 250):
             clientSocket.sendto('left'.encode(),serverAddress)
             s = 0
-    cv2.imshow("w", frame)
+    cv2.imshow("hurrderr", frame)
 
 
 #Pi/Motor Controller's IP and Port
@@ -81,9 +78,9 @@ cam = cv2.VideoCapture(port)
 
 cam.release()
 cam.open(port)
-#time.sleep(2)
+time.sleep(1)
 #Initial command to get gun moving
-#clientSocket.sendto('right'.encode(),serverAddress)
+clientSocket.sendto('right'.encode(),serverAddress)
 
 sound_thread = threading.Thread(target=lambda:play())
 sound_thread.start()
