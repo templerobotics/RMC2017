@@ -1,19 +1,29 @@
 #!/usr/bin/env python
 
-import cv2
+import cv2 #OpenCV
 import time
-from socket import *
+from socket import * #Networking Stuff
+import winsound #to play sound effects
+import threading
 
 #import pyfly2
 #import MotorControl as mc
+s = 0
+audioplay = True
 
-#Motor Functions
-
-
+def play():
+    global s
+    while True:
+        if (s == 1):
+            winsound.PlaySound('fire.wav',winsound.SND_FILENAME)
+            print s
+        if (audioplay == False):
+            break
 
 
 #Load frame, apply front face haar classifier, and check to see if identified rectangle is in center of frame/center of gun
 def processframe():
+    global s
     #grab frame
     retval, frame = cam.read()
     #frame = cv2.imread('img.png')
@@ -39,16 +49,17 @@ def processframe():
 		#print(center)
         #Send pysocket commands to motorcontroller/pi regarding situation
         if (center < 390 and center > 250 ):
-            cv2.putText(frame, "Target Found", (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 0, 255), 2)
+            cv2.putText(frame, "Target Found", (20, 30), cv2.FONT_HERSHEY_DUPLEX, 0.5,(27, 204, 4), 2)
             clientSocket.sendto('shoot'.encode(),serverAddress)
+            s = 1
         elif (center > 390):
             clientSocket.sendto('right'.encode(),serverAddress)
+            s = 0
         elif (center < 250):
             clientSocket.sendto('left'.encode(),serverAddress)
+            s = 0
     cv2.imshow("w", frame)
 
-
-        
 
 #Pi/Motor Controller's IP and Port
 targetIP = '192.168.1.102'
@@ -70,15 +81,18 @@ cam = cv2.VideoCapture(port)
 
 cam.release()
 cam.open(port)
-time.sleep(5)
+#time.sleep(2)
 #Initial command to get gun moving
-clientSocket.sendto('right'.encode(),serverAddress)
+#clientSocket.sendto('right'.encode(),serverAddress)
 
-
+sound_thread = threading.Thread(target=lambda:play())
+sound_thread.start()
 while True:
-	processframe()
-	if cv2.waitKey(30) == 27 & 0xFF == ord('z'):
-		break
+    processframe()
+    if cv2.waitKey(30) == 27:
+        clientSocket.sendto('stopTurning'.encode(),serverAddress)
+        clientSocket.sendto('stopShooting'.encode(),serverAddress)
+        audioplay = False
+        break
 cam.release()
 cv2.DestoryAllWindows()
-
