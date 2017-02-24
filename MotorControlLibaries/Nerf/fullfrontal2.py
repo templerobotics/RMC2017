@@ -64,7 +64,7 @@ def getClosest(boxes):
 def processframe():
     global s
     #grab frame
-    retval, frame = cam.read(
+    retval, frame = cam.read()
         
     #Apply the frontal classifier:
     frontal = detect.detectMultiScale(frame,scaleFactor=1.3, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)

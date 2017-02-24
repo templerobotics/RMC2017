@@ -6,8 +6,7 @@ from socket import * #Networking Stuff
 import winsound #to play sound effects
 import threading
 
-#import pyfly2
-#import MotorControl as mc
+#state variables regarding audio
 s = 0
 audioplay = True
 
@@ -59,7 +58,7 @@ def processframe():
 
 
 #Pi/Motor Controller's IP and Port
-targetIP = '192.168.1.102'
+targetIP = '192.168.1.101'
 port = 12000
 
 
