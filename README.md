@@ -3,5 +3,4 @@ Main repo for TU Robotics
 
 
 --
-Brian Amin
-Sam Wilson
+Brian Amin || Sam Wilson
