@@ -8,16 +8,17 @@ import threading
 
 #state variables regarding audio
 s = 0
+#audio stuff
 audioplay = True
-
-def play():
-    global s
-    while True:
-        if (s == 1):
-            winsound.PlaySound('fire.wav',winsound.SND_FILENAME)
-            print s
-        if (audioplay == False):
-            break
+#Audio stuff
+#def play():
+#    global s
+#    while True:
+#        if (s == 1):
+#            winsound.PlaySound('fire.wav',winsound.SND_FILENAME)
+#            print s
+#        if (audioplay == False):
+#            break
 
 
 #Load frame, apply front face haar classifier, and check to see if identified rectangle is in center of frame/center of gun
@@ -58,7 +59,7 @@ def processframe():
 
 
 #Pi/Motor Controller's IP and Port
-targetIP = '192.168.1.101'
+targetIP = '192.168.1.100'
 port = 12000
 
 
