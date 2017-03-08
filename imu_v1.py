@@ -29,6 +29,7 @@ gyro_z_angle += rate_gyro_z * dt
 
 #Compare to sensehat polished values
 gyro_only = sense.get_gyroscope()
+print("Gyro Results")
 print("p: {pitch}, r: {roll}, y: {yaw}".format(**gyro_only))
 print("rawx:" + gyro_x_angle + "rawy:" + gyro_y_angle + "rawz:" + gyro_z_angle)
 
@@ -40,7 +41,11 @@ accel_raw = sense.get_accelerometer_raw()
 AccXAngle = (atan2(accel_raw["y"],accel_raw["z"]+M_PI) * RAD_TO_DEG)
 AccYAngle = (atan2(accel_raw["z"],accel_raw["x"]+M_PI) * RAD_TO_DEG)
 
-#Print polished results
+#Print polished result
 accel_only = sense.get_accelerometer()
+print("Accel Results")
 print("p: {pitch}, r: {roll}, y: {yaw}".format(**accel_only))
 print("rawx:" + AccXAngle + "rawy:" + AccYAngle)
+
+
+#from here apply filter (And we will get final X and Y angles)
