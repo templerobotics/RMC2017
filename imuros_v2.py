@@ -1,4 +1,4 @@
-import roslib; roslib.load_manifest('razor_imu_9dof')
+#!/usr/bin/env python 
 import rospy
 import math
 
@@ -9,15 +9,15 @@ import tf
 
 gtoaccel = 9.81
 
-rospy.init_node("node")
-imu_pub = rospy.Publisher('Imu', Imu,queue_size=50)
+rospy.init_node("imu_node")
+imu_pub = rospy.Publisher('Imu/imuTopic', Imu,queue_size=50)
 rate = rospy.Rate(2)
 imuMsg = Imu()
 
 
 def imustream():
     #Need to find covariance values through testing. So blank right now
-#Subscriber will need to check to see: if element 0 is -1, then disregard this matrix
+    #Subscriber will need to check to see: if element 0 is -1, then disregard this matrix
 
     imuMsg.orientation_covariance = [-1 , 0 , 0,
     0, 0, 0,
@@ -68,18 +68,4 @@ if __name__ == '__main__':
         imustream()
     except rospy.ROSInterruptException:
         pass
-
-
-
-
-
-
- 
-
-           
-      
-
-
-
-            
 
