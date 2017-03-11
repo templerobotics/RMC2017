@@ -13,7 +13,7 @@ j = pygame.joystick.Joystick(0)
 j.init()
 
 clientSocket = socket(AF_INET, SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+#socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serverAddress = (targetIP, port)
 
 data = {}
@@ -63,6 +63,6 @@ def grabJoystickData():
 while True:
     grabJoystickData()
     message = toString(data)
-    #print(message)
+    print(message)
     clientSocket.sendto(message, serverAddress)
-    sleep(0.2)
+    sleep(0.1)

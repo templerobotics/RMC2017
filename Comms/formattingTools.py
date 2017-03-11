@@ -29,21 +29,21 @@ def toDict(string):
     dictionary = {}
     pairs = string.split(';')
     del pairs[-1]
-    for word in pairs:
-        keyValue = word.split(':')
-        typeCode = keyValue[1]
+		for word in pairs:
+			keyValue = word.split(':')
+			typeCode = keyValue[1]
 
-        if typeCode == 'i':
-            dictionary[keyValue[0]] = int(keyValue[2])
-        elif typeCode == 'f':
-            dictionary[keyValue[0]] = float(keyValue[2])
-        elif typeCode == 'l':
-            dictionary[keyValue[0]] = long(keyValue[2])
-        elif typeCode == 'b':
-            dictionary[keyValue[0]] = bool(keyValue[2])
-        elif typeCode == 'n':
-            dictionary[keyValue[0]] = None
-        else:
-            dictionary[keyValue[0]] = keyValue[2]
+			if typeCode == 'i':
+				dictionary[keyValue[0]] = int(keyValue[2])
+			elif typeCode == 'f':
+				dictionary[keyValue[0]] = float(keyValue[2])
+			elif typeCode == 'l':
+				dictionary[keyValue[0]] = long(keyValue[2])
+			elif typeCode == 'b':
+				dictionary[keyValue[0]] = bool(keyValue[2])
+			elif typeCode == 'n':
+				dictionary[keyValue[0]] = None
+			else:
+				dictionary[keyValue[0]] = keyValue[2]
 
     return dictionary
