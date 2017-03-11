@@ -1,7 +1,6 @@
 import pygame
 from time import sleep
 from socket import *
-from formattingTools import *
 
 targetIP = '192.168.1.100'
 port = 5555
