@@ -3,7 +3,7 @@ from time import sleep
 from socket import *
 from formattingTools import *
 
-targetIP = '192.168.1.132'
+targetIP = '192.168.1.100'
 port = 5555
 
 pygame.joystick.init()
@@ -13,9 +13,32 @@ j = pygame.joystick.Joystick(0)
 j.init()
 
 clientSocket = socket(AF_INET, SOCK_DGRAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serverAddress = (targetIP, port)
 
 data = {}
+def toString(dictionary):
+    string = ''
+    typeCode = ''
+    for key in dictionary:
+        valueType = type(dictionary[key])
+
+        if valueType is int:
+            typeCode = 'i'
+        elif valueType is float:
+            typeCode = 'f'
+        elif valueType is long:
+            typeCode = 'l'
+        elif valueType is bool:
+            typeCode = 'b'
+        elif valueType is None:
+            typeCode = 'n'
+        else:
+            typeCode = 's'
+
+        string += '{}:{}:{};'.format(key, typeCode, str(dictionary[key]))
+
+    return string
 
 def grabJoystickData():
     pygame.event.get()
