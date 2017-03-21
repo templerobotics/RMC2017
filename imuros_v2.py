@@ -3,16 +3,15 @@ import rospy
 import math
 
 from time import time, sleep
-from sensor_msgs.msg import Imu
+from sensor_msgs
 from sense_hat import SenseHat
-import tf
 
 gtoaccel = 9.81
+imuMsg = sensor_msgs.msg.Imu()
 
 rospy.init_node("imu_node")
-imu_pub = rospy.Publisher('Imu/imuTopic', Imu,queue_size=50)
+imu_pub = rospy.Publisher('Imu/imuTopic', imuMsg,queue_size=50)
 rate = rospy.Rate(2)
-imuMsg = Imu()
 
 
 def imustream():
