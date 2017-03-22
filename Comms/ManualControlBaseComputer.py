@@ -1,7 +1,7 @@
 import pygame
 from time import sleep
 from socket import *
-targetIP = '192.168.1.100'
+targetIP = '192.168.1.101'
 port = 5555
 
 pygame.joystick.init()
@@ -40,8 +40,8 @@ def toString(dictionary):
 def grabJoystickData():
     pygame.event.get()
 
-    data["leftX"] = j.get_axis(0)
-    data["leftY"] = j.get_axis(1)
+    data["joyX"] = j.get_axis(0)
+    data["joyY"] = j.get_axis(1)
     data["triggers"] = j.get_axis(2)
     data["rightY"] = j.get_axis(3)
     data["rightX"] = j.get_axis(4)
