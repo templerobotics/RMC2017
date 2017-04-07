@@ -113,12 +113,12 @@ class LinearActuator:
             self.forwardCommand, self.backwardCommand = self.backwardCommand, self.forwardCommand
 
         #Starts the motor at a stopped position, for safety and convenience
-        self.setSpeed(0.0)
+        self._setSpeed(0.0)
 
     #Stops the motor and frees up its address
     def __del__():
 
-        self.setSpeed(0.0)
+        self._setSpeed(0.0)
         usedAddresses.remove(self.address)
 
     #Takes in a value in the range [-1.0, 1.0]
@@ -169,3 +169,94 @@ class LinearActuator:
 
         #Sends the serial packet for the command
         spsi.sendPacket(self.address, self.backwardCommand, data)
+
+#A class that utilizes the Sabretooth controller's built-in tank-style drive functionality
+class Drivetrain:
+
+    def __init__(address, invertY = False, invertX = False, swapDriveCommands = False, swapTurnCommands = False):
+
+        #Confirms the supplied address is acceptable. Does not handle errors locally
+        validateAddress(address)
+
+        #Saves the address and locks its use from other objects
+        self.address = address
+        usedAddresses.append(address)
+
+        #Stores the axis inversion flags
+        self.invertY = invertY
+        self.invertX = invertX
+
+        #Added to allow a quick solution for fixing motors that aren't operating correctly
+        if not swapDriveCommands:
+            self.forwardCommand = motorCommand['MM:Forward']
+            self.backwardCommand = motorCommand['MM:Backward']
+        else:
+            self.forwardCommand = motorCommand['MM:Backward']
+            self.backwardCommand = motorCommand['MM:Forward']
+
+        #Added to allow a quick solution for fixing motors that aren't operating correctly
+        if not swapTurnCommands:
+            self.rightCommand = motorCommand['MM:TurnRight']
+            self.leftCommand = motorCommand['MM:TurnLeft']
+        else:
+            self.rightCommand = motorCommand['MM:TurnLeft']
+            self.leftCommand = motorCommand['MM:TurnRight']
+
+        #Starts the motors safely. Also, mixed mode will not function until both a drive and turn packet have been sent once
+        self._setSpeed(0.0)
+        self._setTurn(0.0)
+
+    #Stops the motors when this object is deleted
+    def __del__():
+
+        self._setSpeed(0.0)
+        self._setTurn(0.0)
+        usedAddresses.remove(self.address)
+
+    #Takes in a value in the range [-1.0, 1.0] to set the speed of the drivetrain
+    #Lightly hidden in favor of drive(x, y)
+    def _setSpeed(speed):
+
+        #Sets the backwards flag
+        if speed < 0.0:
+            backwards = True
+        else:
+            backwards = False
+
+        #Converts raw speed into the appropriate serial byte
+        data = speed2byte(speed)
+
+        #Sends the serial packet for the command
+        if backwards:
+            spsi.sendPacket(self.address, self.backwardCommand, data)
+        else:
+            spsi.sendPacket(self.address, self.forwardCommand, data)
+
+    #Takes in a value in the range [-1.0, 1.0] to set the turn of the drivetrain
+    #Lightly hidden in favor of drive(x, y)
+    def _setTurn(magnitude):
+
+        #Sets the left/right flag
+        if magnitude < 0.0:
+            left = True
+        else:
+            left = False
+
+        #Converts magnitude into the appropriate serial byte
+        data = speed2byte(magnitude)
+
+        #Sends the serial packet for the command
+        if left:
+            spsi.sendPacket(self.address, self.leftCommand, data)
+        else:
+            spsi.sendPacket(self.address, self.rightCommand, data)
+
+    def drive(x, y):
+
+        #Inverts inputs if necessary
+        x = -x if self.invertX else x
+        y = -y if self.invertY else y
+
+        #Sends the speed and turn commands
+        self._setSpeed(y)
+        self._setTurn(x)
