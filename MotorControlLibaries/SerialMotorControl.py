@@ -20,7 +20,7 @@ def speed2byte(speed, forceIntoRange = True):
             speed = 1.0
     return int(ceil(abs(speed) * 127))
 
-#Checks of the address is valid. Throws errors for addresses already in use or out of range
+#Checks if the address is valid. Throws errors for addresses already in use or out of range
 def validateAddress(address):
     if address < 128 or address > 135:
         raise ValueError("Controller address {} is not in the range [128, 135]".format(address))
