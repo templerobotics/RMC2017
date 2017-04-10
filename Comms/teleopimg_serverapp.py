@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-import pygame as pyg
+import pygame
 import cv2
 from socket import *
 from time import sleep
+from matplotlib import pyplot as plt
 
-import pygame
-from time import sleep
-from socket import *
-
-
+#message we want to send to target that will get parsed into command
+imgstring = "img"
 #target IP (intel nuc)
 targetIP = '192.168.1.101'
 port_send = 15000
@@ -34,40 +32,29 @@ j.init()
 
 def grabJoystickData():
     pygame.event.get()
-    
 
-    data["joyX"] = j.get_axis(0)
-    data["joyY"] = j.get_axis(1)
-    data["triggers"] = j.get_axis(2)
-    #data["rightY"] = j.get_axis(3)
-    #data["rightX"] = j.get_axis(4)
-    #data["button1"] = j.get_button(0)
-    #data["button2"] = j.get_button(1)
-    #data["button3"] = j.get_button(2)
-    #data["button4"] = j.get_button(3)
-    #data["button5"] = j.get_button(4)
-    #data["button6"] = j.get_button(5)
-    #data["button7"] = j.get_button(6)
-    #data["button8"] = j.get_button(7)
-    #data["button9"] = j.get_button(8)
-    #data["button10"] = j.get_button(9)
-    #data["button11"] = j.get_button(10)
-    #data["button12"] = j.get_button(11)
+    imgbool = j.get_button(0)
+
 
 while True:
     try:
         grabJoystickData()
-        message = toString(data)
-        print(message)
-        clientSocket.sendto(message, serverAddress)
-        sleep(0.3)
-    #Trying to get it to saftely exit...
-    except (KeyboardInterrupt):
-        clientSocket.shutdown()
-        clientSocket.close()
-        pygame.quit()
-        pygame.QUIT()
-        break
+        if imgbool == True:
+            print(imgbool)
+            sendingSocket.sendto(imgstring, targetAddress)
+            sleep(0.3)
+        imgdata, address = serverSocket.recvfrom(1024)
+        plt.imshow(imgdata)
+        plt.show()
+        
+
+    ##Trying to get it to saftely exit...
+    #except (KeyboardInterrupt):
+    #    clientSocket.shutdown()
+    #    clientSocket.close()
+    #    pygame.quit()
+    #    pygame.QUIT()
+    #    break
 
 
 
