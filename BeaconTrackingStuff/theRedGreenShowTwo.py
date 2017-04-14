@@ -30,7 +30,7 @@ def medianFormula( leg_m, leg_n, base):
         print("leg_m = " + str(leg_m))
         print("leg_n = " + str(leg_n))
         print("base = " + str(base))
-        return 0
+        return -1
 
 #Angles should be in DEGREES
 def getRobotCoordinates( k, K, alpha, beta, gamma, delta):
