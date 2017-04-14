@@ -12,14 +12,17 @@ recvSocket = socket(AF_INET, SOCK_DGRAM)
 recvSocket.bind(('', port_recv))
 
 while True:
-    data, address = recvSocket.r
+    fig = plt.figure()
+    fig.clear()
+    data, address = recvSocket.recvfrom(16000)
     #img = cv2.imread(img)
     print(address)
-    frame = np.fromstring(data, dtype=np.uint8).reshape(512,512,3)
+    print(frame.shape)
+    frame = np.fromstring(data, dtype=np.uint8).reshape(480)
     print frame.shape
-    #frame = np.reshape(frame, (480,128))
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
-    #plt.imshow(frame)
-    #plt.show()
+    plt.imshow(frame)
+    plt.show()
+    plt.close()
     #cv2.imshow('img', frame)
     #cv2.waitKey(25)

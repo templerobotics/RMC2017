@@ -137,7 +137,7 @@ def findColoredContour(image, color):
     return contour
         
 
-#==========================Tools for making OpenCV and ROS work together======================
+#==========================Unit and Data Conversion Tools======================
 
 #Converts sensor_msgs.msg/Image to OpenCV Mat
 def ImgMsg2Mat(img_msg):
@@ -145,7 +145,18 @@ def ImgMsg2Mat(img_msg):
 
 #Converts OpenCV Mat to sensor_msgs.msg/Image
 def Mat2ImgMsg(mat):
-    return cv2_to_imgmsg(mat, encoding = 'passthrough')
+    return bridge.cv2_to_imgmsg(mat, encoding = 'passthrough')
+
+#Converts a numpy ndarray / cv2 image to a numpy binary string
+def Mat2Str(mat):
+    height = len(mat)
+    width = len(mat[0])
+    channels = len(mat[0][0])
+    return mat.tostring(), height, width, channels
+
+#Converts a numpy string of ndarray into an ndarray
+def Str2Mat(string, height, width, channels = 3, dtype = np.uint8):
+    return np.fromstring(string, dtype = dtype).reshape(height, width, channels)
 
 #=========================================Math Tools==========================================
 
