@@ -7,7 +7,7 @@ targetIP = '192.168.1.101'
 port = 5555
 
 #Nuc Info
-Nuc_targetip = '192.168.1.101'
+Nuc_targetip = '192.168.1.102'
 Nuc_port = 15000
 
 pygame.joystick.init()
