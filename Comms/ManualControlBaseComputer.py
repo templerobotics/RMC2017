@@ -9,7 +9,6 @@ port = 5555
 #Nuc Info
 Nuc_targetip = '192.168.1.101'
 Nuc_port = 15000
-img_request ="img"
 
 pygame.joystick.init()
 pygame.init()
