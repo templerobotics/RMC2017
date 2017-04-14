@@ -15,9 +15,9 @@ while True:
     data, address = recvSocket.r
     #img = cv2.imread(img)
     print(address)
-    frame = np.fromstring(data, dtype=np.uint8)
+    frame = np.fromstring(data, dtype=np.uint8).reshape(512,512,3)
     print frame.shape
-    frame = np.reshape(frame, (480,128))
+    #frame = np.reshape(frame, (480,128))
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
     #plt.imshow(frame)
     #plt.show()
