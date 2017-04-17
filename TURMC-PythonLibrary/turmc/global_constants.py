@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+import pigpio
 
 #=============Measurements==============
 
@@ -17,6 +18,8 @@ STAR_CAMERA_INDEX = 0
 PORT_CAMERA_INDEX = 1
 TED_INDEX = 0
 BILL_INDEX = 1
+
+PIGPIO_PI_REFERENCE = pigpio.pi()
 
 #=============Networking==============
 

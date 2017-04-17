@@ -1,6 +1,6 @@
 import cv2
 import sys
-from .. import globals as gc
+from .. import global_constants as gc
 import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -132,7 +132,7 @@ def findColoredContour(image, color):
     thresholded = cv2.bitwise_and(image, image, mask = mask)
     contour = getLargestContour(getContours(thresholded))
     return contour
-        
+
 
 #==========================Unit and Data Conversion Tools======================
 

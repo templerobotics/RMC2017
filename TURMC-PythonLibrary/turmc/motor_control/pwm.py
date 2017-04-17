@@ -1,10 +1,11 @@
 import pigpio
 import wavePWM
 import subprocess
+from ..global_constants import PIGPIO_PI_REFERENCE as PIGPIO_DAEMON
 from time import sleep
 
 #Initialize a global referencing the pigpio daemon
-PIGPIO_DAEMON = pigpio.pi()
+#PIGPIO_DAEMON = pigpio.pi() #Now imported
 
 #Legacy handle for SabretoothLinearActuator, which used to be LinearActuator
 def LinearActuator(pin):
@@ -360,9 +361,9 @@ class ParallaxServoMotor:
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
         self._wave.set_cycle_time(20000)
-        
+
         self._currentPulseWidth = -1
-        
+
         #self.setPosition(90)
         self._isSuspended = False
 
@@ -426,9 +427,9 @@ class HiTecServoMotor:
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
         self._wave.set_cycle_time(4000)
-        
+
         self._currentPulseWidth = -1
-        
+
         #self.setPosition(90)
         self._isSuspended = False
 
@@ -489,9 +490,9 @@ class VexMotorModule:
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
         self._wave.set_cycle_time(20000)
-        
+
         self._currentPulseWidth = -1
-        
+
         self.setSpeed(0.0)
         self._isSuspended = False
 
