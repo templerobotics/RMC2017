@@ -1,1 +1,1 @@
-__all__ = ['pwm', 'serial',]
+__all__ = ['pwm', 'sabertooth_serial',]
