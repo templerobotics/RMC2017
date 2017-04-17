@@ -1,5 +1,5 @@
-opencv
 numpy
 matplotlib
 scipy
 pigpio
+pyserial
