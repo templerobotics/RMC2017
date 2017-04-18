@@ -19,6 +19,10 @@ PORT_CAMERA_INDEX = 1
 TED_INDEX = 0
 BILL_INDEX = 1
 
+#The Phidget controller index for Ted's Stepper
+TED_STEPPER_INDEX = 0
+
+#Global reference to Pigpio's Pi handle. Used by anything using Pigpio
 PIGPIO_PI_REFERENCE = pigpio.pi()
 
 #=============Networking==============
