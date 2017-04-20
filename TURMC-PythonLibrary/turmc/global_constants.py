@@ -11,13 +11,16 @@ CAMERA_AXIAL_DISTANCE= 1.0
 #This is the real-world distance between the centers of the two beacons. It is in cm and typically used as 'K'
 BEACON_CENTER_DISTANCE = 1.0
 
+CALIBRATION_STICKER_ANGLE_OFFSET = 0
+DISTANCE_ROBOT_CENTER_TO_CAMERA_STEPPER = 0
+
+
 #=============Hardware==============
 
 #These correspond to Ubuntu's /dev/video# numbers. We should use udev rules to set static assignment.
-STAR_CAMERA_INDEX = 0
-PORT_CAMERA_INDEX = 1
 TED_INDEX = 0
 BILL_INDEX = 1
+USELESS_INDEX = 2
 
 #The Phidget controller index for Ted's Stepper
 TED_STEPPER_INDEX = 0
@@ -29,12 +32,15 @@ PIGPIO_PI_REFERENCE = pigpio.pi()
 
 #The IP address of the Pi
 RASPBERRY_PI_IP = ''
+RASPBERRY_PI_PORT = 12002
 
 #The IP address of the Nuc
 NUC_IP = ''
+NUC_PORT = 12001
 
 #The IP address of the base computer
 BASE_COMPUTER_IP = ''
+BASE_COMPUTER_PORT = 12000
 
 #The IP address (and port?) of the ROS Master Node.
 ROS_MASTER_URI = ''
@@ -61,3 +67,14 @@ tr2 = 0.1574
 tr3 = -0.04267
 TED_MATRIX = np.matrix([ [tfx, 0, tcx], [0, tfy, tcy], [0, 0, 1] ])
 TED_DISTORTION = np.matrix([ tr1, tr2, 0, 0, tr3])
+
+#=============Serial Addresses================
+
+SERIAL_ADDR_DRIVETRAIN = 128
+SERIAL_ADDR_LINEAR_ACUATORS = 129
+SERIAL_ADDR_OTHER_MOTORS = 130
+
+MOTOR_NUMBER_DRILL_ACTUATOR = 2
+MOTOR_NUMBER_CONVEYOR_ACTUATOR = 1
+MOTOR_NUMBER_AUGER = 2
+MOTOR_NUMBER_CONVEYOR = 1
