@@ -48,7 +48,7 @@ def handle(data):
 
     #TODO: implement the drill track stepper into manual control
 
-#Starts up a server listening on
+#Starts up a server listening on the RPi port
 def main():
     server = Server(RASPBERRY_PI_PORT, handle)
     server.start()
