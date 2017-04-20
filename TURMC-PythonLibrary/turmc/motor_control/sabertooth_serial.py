@@ -64,7 +64,7 @@ def validateAddress(address):
     if address < 128 or address > 135:
         raise ValueError("Controller address {} is not in the range [128, 135]".format(address))
     elif address in usedAddresses:
-        raise Exception("Address {} is already in use".format(address))
+        print("WARNING: Address {} is already in use".format(address))
     else:
         return
 
@@ -181,7 +181,7 @@ class LinearActuator:
 
     #Sets the speed to 0
     def stop(self):
-        self.setSpeed(0.0)
+        self._setSpeed(0.0)
 
     #Takes a speed input from (0.0, 1.0], to adjust rate of extension
     def extend(self, speed = 1.0):
@@ -290,11 +290,17 @@ class Drivetrain:
         else:
             spsi.sendPacket(self.address, self.rightCommand, data)
 
-    def drive(self, x, y):
+    def drive(self, x, y, z = -1.0):
 
         #Inverts inputs if necessary
         x = -x if self.invertX else x
         y = -y if self.invertY else y
+
+        #Throttles the motors based on optional third arguement
+        if z >= 0.0:
+            z = 1.0 if z > 1.0 else z
+            x *= z
+            y *= z
 
         #Sends the speed and turn commands
         self._setSpeed(y)
