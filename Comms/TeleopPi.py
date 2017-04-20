@@ -1,6 +1,6 @@
 from turmc.global_constants import *
 from turmc.motor_control.sabertooth_serial import DCMotor, LinearActuator, Drivetrain
-from turmc.networking.joystick_server import Server
+from turmc.networking.joystick import Server
 
 #Define all the motor objects
 drivetrain = Drivetrain(SERIAL_ADDR_DRIVETRAIN)

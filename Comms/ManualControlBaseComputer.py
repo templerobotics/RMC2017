@@ -76,7 +76,4 @@ while True:
         clientSocket.shutdown()
         clientSocket.close()
         pygame.quit()
-        pygame.QUIT()
         break
-
-

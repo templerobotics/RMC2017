@@ -1,5 +1,5 @@
 from socket import *
-from ..tools.textutils import String2Dictionary
+from ..tools.textutils import String2Dictionary, Dictionary2String
 
 #Creates a Server object for an event based socket system
 class Server():
@@ -34,3 +34,21 @@ class Server():
     #Legacy handle for stop()
     def stopListening(self):
         self.stop()
+
+#Creates a socket that sends joystick data to its target
+class Client():
+
+    #Requires the ip of the target and the port to use
+    def __init__(self, ip, port):
+        self._client = socket(AF_INET, SOCK_DGRAM)
+        self._address = (ip, port)
+
+    #Safely disposes of the socket
+    def __del__(self):
+        self._client.shutdown()
+        self._client.close()
+
+    #automatically converts a dictionary to a string and sends the string
+    def send(self, data):
+        message = Dictionary2String(data)
+        self._client.sendto(message, self._address)
