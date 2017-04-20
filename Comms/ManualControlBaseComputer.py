@@ -2,6 +2,7 @@ import pygame
 from time import sleep
 from socket import *
 
+
 #Pi Information
 targetIP = '192.168.1.101'
 port = 5555
