@@ -1,6 +1,21 @@
 import time
 import pigpio
 import encoder_class
+#import rospy
+#import math
+#import common_msgs.msg
+#from common_msg.msg import Odometry
+
+"""ROS Related Things
+encoder = common_msgs.msg.Odometry()
+rospy.init_node("odom_node")
+odom_pub = rospy.Publisher('Odometry/Odom',Odometry,queue_size=500)
+rate = rospy.Rate(1000)
+
+
+encoder.posewithcovariance.x = float(whatevs)
+
+"""
 
 #encoder tick position
 pos = 0
