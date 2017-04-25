@@ -19,7 +19,7 @@ def writefile(list):
 
 def callback(way):
     global pos
-    pos = way
+    pos += way
     debug.append(way)
     print("pos={}".format(pos))
     #for debugging purposes
