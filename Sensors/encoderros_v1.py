@@ -38,8 +38,8 @@ def callback(way):
     debug.append(way)
     print("pos={}".format(pos))
     #for debugging purposes
-    if pos == 100:
-        print("1 Full shaft rotation completed")
+    if pos == 6666:
+        print("1 Full wheel shaft rotation completed")
 
 
 #Start pi object, will eventually need to integrate this with the MotorControl Library's Pi instance from Pigpio
