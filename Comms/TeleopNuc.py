@@ -1,11 +1,15 @@
-from turmc.global_constants import *
+from turmc.global_constants import NUC_PORT
 from turmc.networking.joystick import Server
+from turmc.motor_control.camera_stepper import CameraStepper
 
 #The 'justSent' booleans make the images only get sent on presses, and prevents
 #images from being spammed if someone holds down the button
 justSentUseless = False
 justSentBill = False
 justSentTed = False
+
+#Initialize the camera stepper object
+stepper = CameraStepper()
 
 def handle(data):
     #Sends an image from Useless
@@ -28,6 +32,8 @@ def handle(data):
         justSentTed = True
     elif data['button12'] == 0.0 and justSentTed:
         justSentTed = False
+
+    #TODO: Control the CameraStepper using the left and rights movements of the thumbstick
 
 #Starts up a server listening on the Nuc port
 def main():
