@@ -12,7 +12,7 @@ def LinearActuator(pin):
     return SabretoothLinearActuator(pin)
 
 #A generic PWM generator object. Useful for testing
-class wave:
+class Wave:
 
     #The pin number should be the BCM/GPIO pin number
     def __init__(self, pin):
@@ -282,11 +282,14 @@ class SabretoothLinearActuator:
 class MicrostepStepperMotor:
 
     #stepPin and dirPin are BCM/GPIO pin numbers
-    def __init__(self, stepPin, dirPin):
+    def __init__(self, stepPin, dirPin, drillUpDirection = 1):
         self._stepPin = stepPin
         self._dirPin = dirPin
 
-        self._direction = 1
+        self._upDirection = drillUpDirection
+        self._downDirection = 0 if drillUpDirection == 1 else 1
+        self.currentDirection = 0
+        self.setDirection(self._upDirection)
         PIGPIO_DAEMON.write(self._dirPin, self._direction)
 
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
@@ -319,35 +322,51 @@ class MicrostepStepperMotor:
     #def autoGradient(self):
         #Will have similar functionality as SabretoothDCMotor.autoGradient(). However, this will require mapping a linear function to a curve
 
-    #Temporary placeholder while the math for setSpeed is calculated
-    def fullSpeed(self):
-        if self._isSuspended:
-            self.resume()
-
-        self._wave.set_cycle_time(4)
-        self._update()
-
-    #Temporary placeholder while the math for setSpeed is calculated
-    def slowSpeed(self):
-        if self._isSuspended:
-            self.resume()
-
-        self._wave.set_cycle_time(500)
-        self._update()
-
-    def reverseDirection(self):
-        self.stop()
-
-        if self._direction == 1:
-            self._direction = 0
-        else:
-            self._direction = 1
-        PIGPIO_DAEMON.write(self._dirPin, self._direction)
+    # #Temporary placeholder while the math for setSpeed is calculated
+    # def fullSpeed(self):
+    #     if self._isSuspended:
+    #         self.resume()
+    #
+    #     self._wave.set_cycle_time(4)
+    #     self._update()
+    #
+    # #Temporary placeholder while the math for setSpeed is calculated
+    # def slowSpeed(self):
+    #     if self._isSuspended:
+    #         self.resume()
+    #
+    #     self._wave.set_cycle_time(500)
+    #     self._update()
 
     #Stops the motor by suspending it
     def stop(self):
         if not self._isSuspended:
             self.suspend()
+
+    def setDirection(self, direction, stopOnDirectionChange = True):
+        if not self.currentDirection == direction
+            if stopOnDirectionChange:
+                self.stop()
+            PIGPIO_DAEMON.write(self._dirPin, direction)
+            self.currentDirection = direction
+
+    def getDirection(self):
+        if self.currentDirection == self._upDirection:
+            return 'up'
+        else:
+            return 'down'
+
+    def reverse(self):
+        direction = self._upDirection if self.currentDirection == self._downDirection else self._downDirection
+        self.setDirection(direction)
+
+    def up(self):
+        if self.currentDirection == self._downDirection:
+            self.setDirection(self._upDirection)
+
+    def down(self):
+        if self.currentDirection == self._upDirection:
+            self.setDirection(self._downDirection)
 
 class ParallaxServoMotor:
 
