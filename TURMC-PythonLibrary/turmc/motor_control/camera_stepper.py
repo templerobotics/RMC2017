@@ -20,6 +20,7 @@ def deg2step(degrees, asPosition = True):
     steps = int(round(degrees / 0.9))
     return steps, step2deg(steps)
 
+#Class to control a Phidgets stepper
 class CameraStepper:
 
     def __init__(self, index = TED_STEPPER_INDEX):
@@ -36,6 +37,10 @@ class CameraStepper:
 
     def __del__(self):
         controller.setEngaged(self.index, False)
+
+    #Zeroes the stepper at its current position
+    def zero(self):
+        controller.setCurrentPosition(self.index, 0)
 
     #Engages the motor; this means it can be given commands and will hold its
     #position
@@ -68,5 +73,16 @@ class CameraStepper:
     def isMoving(self):
         return not controller.getStopped(self.index)
 
+    #Stops the motor wherever it currently is
     def stop(self):
         controller.setTargetPosition(self.index, controller.getPosition(self.index))
+
+    #If the stepper is not all the way left, takes one step left
+    def stepLeft(self):
+        if controller.getPosition(self.index) < 399:
+            controller.setTargetPosition(self.index, controller.getPosition(self.index) + 1)
+
+    #If the stepper is not all the way right, takes one step right
+    def stepRight(self):
+        if controller.getPosition(self.index) > 0:
+            controller.setTargetPosition(self.index, controller.getPosition(self.index) - 1)
