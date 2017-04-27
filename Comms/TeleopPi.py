@@ -46,7 +46,7 @@ def handle(data):
     else:
         conveyorActuator.stop()
 
-    #TODO: implement the drill track stepper into manual control
+    #TODO: implement the drill track stepper into manual control using the up and down movements of the thumbstick
 
 #Starts up a server listening on the RPi port
 def main():
