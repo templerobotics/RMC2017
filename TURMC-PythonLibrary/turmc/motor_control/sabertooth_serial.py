@@ -34,14 +34,14 @@ class SPSI:
         sleep(2)
 
         #Baudrate configuration
-        self.com.write(170)
+        self.com.write(char(170))
 
     #Sends the packet along with a checksum
     def sendPacket(self, address, command, data):
-        self.com.write(address)
-        self.com.write(command)
-        self.com.write(data)
-        self.com.write(checksum(address, command, data))
+        self.com.write(char(address))
+        self.com.write(char(command))
+        self.com.write(char(data))
+        self.com.write(char(checksum(address, command, data)))
 
 
 #This is the serial interface for controlling a bank of Sabertooth 2x25 Motor Controllers.
