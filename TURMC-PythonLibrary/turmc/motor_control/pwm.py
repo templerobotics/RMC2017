@@ -289,12 +289,14 @@ class MicrostepStepperMotor:
         self._upDirection = drillUpDirection
         self._downDirection = 0 if drillUpDirection == 1 else 1
         self.currentDirection = 0
-        self.setDirection(self._upDirection)
+
         PIGPIO_DAEMON.write(self._dirPin, self._direction)
 
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
         self._isSuspended = False
+
+        self.setDirection(self._upDirection)
 
     #Safely cancels the pwm wave before deletion
     def __del__(self):
@@ -315,33 +317,22 @@ class MicrostepStepperMotor:
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
         self._isSuspended = False
 
-    #def setSpeed(self, speed):
-        #Lowest value for cycleTime == 4, Max value requires testing to find stop point
-        #Also,
-
-    #def autoGradient(self):
-        #Will have similar functionality as SabretoothDCMotor.autoGradient(). However, this will require mapping a linear function to a curve
-
-    # #Temporary placeholder while the math for setSpeed is calculated
-    # def fullSpeed(self):
-    #     if self._isSuspended:
-    #         self.resume()
-    #
-    #     self._wave.set_cycle_time(4)
-    #     self._update()
-    #
-    # #Temporary placeholder while the math for setSpeed is calculated
-    # def slowSpeed(self):
-    #     if self._isSuspended:
-    #         self.resume()
-    #
-    #     self._wave.set_cycle_time(500)
-    #     self._update()
-
     #Stops the motor by suspending it
     def stop(self):
         if not self._isSuspended:
             self.suspend()
+
+    def hold(self):
+        if not self._isSuspended:
+            self._wave.set_cycle_time(600000000) #This sets the period to 10 minutes
+
+    #Sets the pace in seconds per inch of the stepper. Assumes microsteps/revolution is 10000
+    def setPace(self, pace):
+        if self._isSuspended:
+            self.resume()
+        time = pace * 10
+        self._wave.set_cycle_time(time)
+        self._update()
 
     def setDirection(self, direction, stopOnDirectionChange = True):
         if not self.currentDirection == direction
