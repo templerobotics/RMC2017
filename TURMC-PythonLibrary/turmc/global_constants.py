@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
 import numpy as np
-import pigpio
-
+try:
+    import pigpio
+    global pigpioLoaded = True
+except ImportError:
+    print("Pigpio not found; skipping")
+    global pigpioLoaded = False
 #=============Measurements==============
 
 #This is the real-world distance between the two cameras. It is in cm and typically used as 'k'
@@ -13,7 +17,6 @@ BEACON_CENTER_DISTANCE = 1.0
 
 CALIBRATION_STICKER_ANGLE_OFFSET = 0
 DISTANCE_ROBOT_CENTER_TO_CAMERA_STEPPER = 0
-
 
 #=============Hardware==============
 
@@ -30,7 +33,7 @@ DRILL_STEPPER_DIR_PIN = 21
 TED_STEPPER_INDEX = 0
 
 #Global reference to Pigpio's Pi handle. Used by anything using Pigpio
-PIGPIO_PI_REFERENCE = pigpio.pi()
+PIGPIO_PI_REFERENCE = pigpio.pi() if pigpioLoaded else None
 
 #=============Networking==============
 
@@ -74,9 +77,9 @@ TED_DISTORTION = np.matrix([ tr1, tr2, 0, 0, tr3])
 
 #=============Serial Addresses================
 
-SERIAL_ADDR_DRIVETRAIN = 128
-SERIAL_ADDR_LINEAR_ACUATORS = 129
-SERIAL_ADDR_OTHER_MOTORS = 130
+SERIAL_ADDR_DRIVETRAIN = 129
+SERIAL_ADDR_LINEAR_ACUATORS = 130
+SERIAL_ADDR_OTHER_MOTORS = 128
 
 MOTOR_NUMBER_DRILL_ACTUATOR = 2
 MOTOR_NUMBER_CONVEYOR_ACTUATOR = 1
