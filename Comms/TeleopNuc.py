@@ -35,11 +35,11 @@ def sendImage(cameraName, grayscale = True, metadata = {}):
 
 def handle(data):
     #Sends an image from Useless
-    # if data['button10'] == 1.0 and not justSentUseless:
-    #     sendImage('Useless')
-    #     justSentUseless = True
-    # elif data['button10'] == 0.0 and justSentUseless:
-    #     justSentUseless = False
+    if data['button10'] == 1.0 and not justSentUseless:
+        sendImage('Useless')
+        justSentUseless = True
+    elif data['button10'] == 0.0 and justSentUseless:
+        justSentUseless = False
 
     #Sends an image from Bill
     if data['button11'] == 1.0 and not justSentBill:
