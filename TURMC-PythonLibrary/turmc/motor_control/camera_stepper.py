@@ -69,6 +69,14 @@ class CameraStepper:
             controller.setTargetPosition(self.index, steps)
             return actualAngle
 
+    #Returns the step position of the stepper
+    def getPosition(self):
+        return controller.getPosition(self.index)
+
+    #Returns the angular position of the stepper
+    def getBearing(self):
+        return step2deg(self.getPosition(), True)
+
     #If true, the motor is moving, if false, it is likely at its destination
     def isMoving(self):
         return not controller.getStopped(self.index)
