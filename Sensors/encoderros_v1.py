@@ -5,6 +5,7 @@ import encoder_class
 #import math
 #import common_msgs.msg
 #from common_msg.msg import Odometry
+from turmc.global_constants import PIGPIO_PI_REFERENCE
 
 """ROS Related Things
 encoder = common_msgs.msg.Odometry()
@@ -43,7 +44,7 @@ def callback(way):
 
 
 #Start pi object, will eventually need to integrate this with the MotorControl Library's Pi instance from Pigpio
-pi = pigpio.pi()
+pi = PIGPIO_PI_REFERENCE
 
 decoder = encoder_class.decoder(pi,14,4,callback)
 time.sleep(300)
@@ -51,8 +52,3 @@ print("Writing Debug")
 writefile(debug)
 decoder.cancel()
 pi.stop()
-
-
-
-
-
