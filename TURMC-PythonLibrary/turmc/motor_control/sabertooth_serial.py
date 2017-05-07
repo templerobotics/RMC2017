@@ -1,5 +1,6 @@
 from math import ceil
 import serial
+from time import sleep
 
 #List of commands for packetized serial mode of a Sabertooth Motor Controller
 motorCommand = {'M1:Forward': 0,
@@ -34,14 +35,14 @@ class SPSI:
         sleep(2)
 
         #Baudrate configuration
-        self.com.write(char(170))
+        self.com.write(chr(170))
 
     #Sends the packet along with a checksum
     def sendPacket(self, address, command, data):
-        self.com.write(char(address))
-        self.com.write(char(command))
-        self.com.write(char(data))
-        self.com.write(char(checksum(address, command, data)))
+        self.com.write(chr(address))
+        self.com.write(chr(command))
+        self.com.write(chr(data))
+        self.com.write(chr(checksum(address, command, data)))
 
 
 #This is the serial interface for controlling a bank of Sabertooth 2x25 Motor Controllers.
@@ -71,7 +72,7 @@ def validateAddress(address):
 #For standard reversible DC Motors
 class DCMotor:
 
-    def __init__(self, address, motorNumber):
+    def __init__(self, address, motorNumber, invertCommands = False):
 
         #Confirms the supplied address is acceptable. Does not handle errors locally
         validateAddress(address)
