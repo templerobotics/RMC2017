@@ -17,33 +17,33 @@ def handle(data):
     drivetrain.drive(data['joyX'], data['joyY'])
 
     #Auger controls; full speed if both are pressed
-    if data['button1'] = 1.0:
+    if data['button1'] == 1.0:
         auger.setSpeed(1.0)
-    elif data['button7'] = 1.0:
+    elif data['button7'] == 1.0:
         auger.setSpeed(-0.5)
     else:
         auger.stop()
 
     #Conveyor controls; full speed if both are pressed
-    if data['button2'] = 1.0:
+    if data['button2'] == 1.0:
         conveyorMotor.setSpeed(0.5)
-    elif data['button8'] = 1.0:
+    elif data['button8'] == 1.0:
         conveyorMotor.setSpeed(-0.2)
     else:
         conveyorMotor.stop()
 
     #Drill actuator controls; retracts if both are pressed
-    if data['button3'] = 1.0:
+    if data['button3'] == 1.0:
         drillActuator.retract()
-    elif data['button5'] = 1.0:
+    elif data['button5'] == 1.0:
         drillActuator.extend()
     else:
         drillActuator.stop()
 
     #Conveyor actuator controls; retracts if both are pressed
-    if data['button4'] = 1.0:
+    if data['button4'] == 1.0:
         conveyorActuator.retract()
-    elif data['button6'] = 1.0:
+    elif data['button6'] == 1.0:
         conveyorActuator.extend()
     else:
         conveyorActuator.stop()
