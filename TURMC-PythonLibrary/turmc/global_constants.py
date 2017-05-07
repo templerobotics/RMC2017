@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import numpy as np
+pigpioLoaded = True
 try:
     import pigpio
-    global pigpioLoaded = True
 except ImportError:
     print("Pigpio not found; skipping")
-    global pigpioLoaded = False
+    pigpioLoaded = False
 #=============Measurements==============
 
 #This is the real-world distance between the two cameras. It is in cm and typically used as 'k'
