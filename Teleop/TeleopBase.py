@@ -6,9 +6,13 @@ from turmc.global_constants import *
 #Rate is the number of updates to send per second
 rate = 2
 
-#Defines the socket objects of the RPi and the Nuc; used for sending them data
-RPi = Client(RASPBERRY_PI_IP, RASPBERRY_PI_PORT)
-Nuc = Client(NUC_IP, NUC_PORT)
+#Initialize pygame
+pygame.init()
+pygame.joystick.init()
+
+#Initialize the joystick
+j = pygame.joystick.Joystick(0)
+j.init()
 
 #A dictionary that will hold all the joystick data
 data = {}
@@ -31,17 +35,14 @@ def grabJoystickData():
     data["button10"] = j.get_button(9)
     data["button11"] = j.get_button(10)
     data["button12"] = j.get_button(11)
+    data["hatX"], data["hatY"] = j.get_hat(0)
 
 #Run if this script is run as main
 def main():
 
-    #Initialize pygame
-    pygame.init()
-    pygame.joystick.init()
-
-    #Initialize the joystick
-    j = pygame.joystick.Joystick(0)
-    j.init()
+    #Defines the socket objects of the RPi and the Nuc; used for sending them data
+    RPi = Client(RASPBERRY_PI_IP, RASPBERRY_PI_PORT)
+    Nuc = Client(NUC_IP, NUC_PORT)
 
     #This is intended to continue until it is manually stopped
     while True:

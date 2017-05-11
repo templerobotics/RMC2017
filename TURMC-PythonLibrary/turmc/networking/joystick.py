@@ -5,14 +5,17 @@ from ..tools.textutils import String2Dictionary, Dictionary2String
 class Server():
 
     #Given a port, waits for messages on that channel. Received messages are passed to an event handler
-    def __init__(self, port, eventHandlerCallback):
+    def __init__(self, port, eventHandlerCallback, bufferSize = 2048):
+        self._port = port
+        self.bufferSize = bufferSize
         self._server = socket(AF_INET, SOCK_DGRAM)
-        self._server.bind(('', port))
+        self._server.bind(('', self._port))
         self.callback = eventHandlerCallback
         self.listen = False
 
     #Stops listening on delete in an attempt to prevent hanging
     def __del__(self):
+        self._server.close()
         self.listen = False
 
     #Starts an event loop that passes received data back to an event handler
@@ -45,7 +48,6 @@ class Client():
 
     #Safely disposes of the socket
     def __del__(self):
-        self._client.shutdown()
         self._client.close()
 
     #automatically converts a dictionary to a string and sends the string
