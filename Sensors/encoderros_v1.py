@@ -1,10 +1,11 @@
 import time
 import pigpio
 import encoder_class
-#import rospy
+import rospy
 #import math
 #import common_msgs.msg
 #from common_msg.msg import Odometry
+
 
 """ROS Related Things
 encoder = common_msgs.msg.Odometry()
