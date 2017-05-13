@@ -5,6 +5,7 @@ from math import ceil
 
 class ImageServer:
 
+
     def __init__(self, port, callback, bufferSize = 2048):
         self._port = port
         self._callback = callback
@@ -12,7 +13,6 @@ class ImageServer:
 
         self._server = socket(AF_INET, SOCK_DGRAM)
         self._server.bind(('', self._port))
-
         self.isListening = False
 
     #Closes the server
@@ -76,8 +76,9 @@ class ImageServer:
 
     def start(self):
         self.isListening = True
-        while isListening:
+        while self.isListening:
             self._listen()
+			
 
     def stop(self):
         self.isListening = False
