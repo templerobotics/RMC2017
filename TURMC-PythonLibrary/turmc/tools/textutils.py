@@ -1,3 +1,5 @@
+#/usr/bin/env python
+
 #Converts a dictionary to a string in the form 'key1:type1:value1;key2:type2:value2;'
 def Dictionary2String(dictionary):
     string = ''

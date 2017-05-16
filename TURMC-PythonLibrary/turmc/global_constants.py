@@ -86,3 +86,8 @@ MOTOR_NUMBER_CONVEYOR_ACTUATOR = 1
 MOTOR_NUMBER_AUGER = 2
 MOTOR_NUMBER_AUGUR = MOTOR_NUMBER_AUGER
 MOTOR_NUMBER_CONVEYOR = 1
+
+#================ROS Related Settings=================
+
+#The frequency, in Hz, that Bill and Useless publish images to the ROS network
+IMAGE_PUBLISH_FREQUENCY = 1
