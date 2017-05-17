@@ -12,8 +12,9 @@ class Camera():
         self.cam.release()
 
     def _getRawImage(self):
-        image = self.cam.grab()
-        image = self.cam.retrieve(image)
+        # image = self.cam.grab()
+        # image = self.cam.retrieve(image)
+        image = self.cam.read()
         return image
 
     def getImage(self):
