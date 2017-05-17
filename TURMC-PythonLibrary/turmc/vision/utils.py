@@ -138,11 +138,11 @@ def findColoredContour(image, color):
 
 #Converts sensor_msgs.msg/Image to OpenCV Mat
 def ImgMsg2Mat(img_msg):
-    return bridge.imgmsg_to_cv2(img_msg, desired_encoding = 'passthrough')
+    return CvBridge.imgmsg_to_cv2(img_msg, desired_encoding = 'passthrough')
 
 #Converts OpenCV Mat to sensor_msgs.msg/Image
 def Mat2ImgMsg(mat):
-    return bridge.cv2_to_imgmsg(mat, encoding = 'passthrough')
+    return CvBridge.cv2_to_imgmsg(mat, encoding = 'passthrough')
 
 #Converts a numpy ndarray / cv2 image to a numpy binary string
 def Mat2Str(mat):
