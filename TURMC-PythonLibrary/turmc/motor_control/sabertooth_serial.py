@@ -1,4 +1,4 @@
-from math import ceil
+from math import ceil, sqrt
 import serial
 from time import sleep
 
@@ -306,3 +306,68 @@ class Drivetrain:
         #Sends the speed and turn commands
         self._setSpeed(y)
         self._setTurn(x)
+
+#A Simplified arcade tank-style drivetrain. Only has 4 actions: forwards, backwards, turn left, and turn right.
+#Speed is controlled by the magnitude of the inputs
+class DrivetrainSimplified:
+
+    def __init__(self, address, invertX = False, invertY = False, leftMotorNumber = 1):
+
+        #Confirms the supplied address is acceptable. Does not handle errors locally
+        validateAddress(address)
+
+        #Saves the address and locks its use from other objects
+        self.address = address
+        usedAddresses.append(address)
+
+        #Saves inversion flags
+        self.invertX = invertX
+        self.invertY = invertY
+
+        #Assigns the left and right motors
+        if leftMotorNumber == 1:
+            self.leftMotor = DCMotor(self.address, 1)
+            self.rightMotor = DCMotor(self.address, 2)
+        elif leftMotorNumber == 2:
+            self.leftMotor = DCMotor(self.address, 2)
+            self.rightMotor = DCMotor(self.address, 1)
+        else:
+            raise ValueError("Sabertooth motor numbers must be 1 or 2, not {}".format(leftMotorNumber))
+
+        #Starts the motors stopped
+        self.drive(0.0, 0.0)
+
+    #Stops the drivetrain when deleted
+    def __del__(self):
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+        usedAddresses.remove(self.address)
+
+    #Using x and y values, drives either forwards or backwards, or turns left or right
+    def drive(x, y):
+
+        #Inverts x if flag is set
+        if self.invertX:
+            x = -x
+
+        #Inverts y if flag is set
+        if self.invertY:
+            y = -y
+
+        #The magnitude is the radius of the input circle
+        magnitude = sqrt(x ** 2 + y ** 2)
+
+        if abs(y) > abs(x): #Direction is either forwards or backwards
+            if y >= 0.0: #Direction is forwards
+                self.leftMotor.setSpeed(magnitude)
+                self.rightMotor.setSpeed(magnitude)
+            else: #Direction is backwards
+                self.leftMotor.setSpeed(-magnitude)
+                self.rightMotor.setSpeed(-magnitude)
+        else: #Direction is either left or right
+            if x >= 0.0: #Direct is right
+                self.leftMotor.setSpeed(magnitude)
+                self.rightMotor.setSpeed(-magnitude)
+            else: #Direction is left
+                self.leftMotor.setSpeed(-magnitude)
+                self.rightMotor.setSpeed(magnitude)
