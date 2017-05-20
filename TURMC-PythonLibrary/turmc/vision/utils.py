@@ -61,7 +61,7 @@ def findCenter(contour):
 
 #Calculates angle by using the focal length and pixel position
 def getAnglesToPoint(point, camMatrix):
-    yaw = 90 - math.degrees(math.atan((point[0] - 319) / camMatrix[0, 0]))
+    yaw = math.degrees(math.atan((point[0] - 319) / camMatrix[0, 0]))
     #pitch = 90 - math.degrees(math.atan(point[1] - camMatrix[1, 2]) / camMatrix[1, 1]))
     return (yaw, 0)
 
