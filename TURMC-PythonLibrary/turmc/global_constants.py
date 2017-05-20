@@ -91,3 +91,13 @@ MOTOR_NUMBER_CONVEYOR = 1
 
 #The frequency, in Hz, that Bill and Useless publish images to the ROS network
 IMAGE_PUBLISH_FREQUENCY = 1
+
+#ROS Topics
+TOPIC_TED_IMAGES = 'images/Ted'
+TOPIC_BILL_IMAGES = 'images/Bill'
+TOPIC_USELESS_IMAGES = 'images/Useless'
+TOPIC_TED_STEPPER = 'hardware/Ted'
+TOPIC_BEACON_TRACKING = 'data/beacontracking'
+TOPIC_MOTOR_CONTROL = 'hardware/Pi'
+TOPIC_ENCODER = 'data/encoder'
+TOPIC_MAPPING = 'control/mapping'
