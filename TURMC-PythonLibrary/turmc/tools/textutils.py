@@ -1,4 +1,5 @@
 #/usr/bin/env python
+import json
 
 #Converts a dictionary to a string in the form 'key1:type1:value1;key2:type2:value2;'
 def Dictionary2String(dictionary):
@@ -46,3 +47,9 @@ def String2Dictionary(string):
             dictionary[keyValue[0]] = keyValue[2]
 
     return dictionary
+
+def packDict(data):
+    return json.dumps(data)
+
+def unpackDict(data):
+    return json.loads(data)
