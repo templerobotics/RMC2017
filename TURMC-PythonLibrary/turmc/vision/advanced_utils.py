@@ -3,6 +3,7 @@
 import cv2
 from time import sleep
 from collections import deque
+from turmc.motor_control.camera_stepper import step2deg
 
 def BeaconTracking2017(color, camera, stepper):
 
@@ -21,14 +22,19 @@ def BeaconTracking2017(color, camera, stepper):
     #Captures 400 images in 40 seconds; storing position data alongside them
     data.append({'image': camera.getImage(), 'position': 0})
     while stepper.getPosition() < 399:
-        stepper.stepRight()
+        stepper.stepLeft()
         data.append({'image': camera.getImage(), 'position': stepper.getPosition()})
         sleep(0.1)
 
     angles = []
     for item in data:
-        #Process the image and calculate the adjusted angle to target for BOTH colors
-        angles.append(5)
+        #Find colored contour
+        contour = findColoredContour(item['image'], color)
+
+        if not contour == None:
+            center = findCenter(contour)
+            yaw = getAnglesToPoint(center, camera.matrix)[0]
+            angles.append(step2deg(item['position']) - yaw)
 
     meanBearing = sum(angles) / len(angles)
 
