@@ -2,9 +2,9 @@ from socket import *
 import cv2
 import json
 from math import ceil
+import os.path
 
 class ImageServer:
-
 
     def __init__(self, port, callback, bufferSize = 2048):
         self._port = port
@@ -78,7 +78,7 @@ class ImageServer:
         self.isListening = True
         while self.isListening:
             self._listen()
-			
+
 
     def stop(self):
         self.isListening = False

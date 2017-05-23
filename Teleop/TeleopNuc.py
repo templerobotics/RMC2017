@@ -22,11 +22,11 @@ imageSender = ImageSender(BASE_COMPUTER_IP, BASE_COMPUTER_PORT)
 
 def sendImage(cameraName, grayscale = True, metadata = {}):
     if cameraName == 'Useless':
-        frame = USELESS.read()
+        _, frame = USELESS.read()
     elif cameraName == 'Bill':
-        frame = BILL.read()
+        _, frame = BILL.read()
     elif cameraName == 'Ted':
-        frame = TED.read()
+        _, frame = TED.read()
     else:
         return
     if grayscale:
