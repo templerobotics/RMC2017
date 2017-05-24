@@ -41,8 +41,8 @@ def grabJoystickData():
 def main():
 
     #Defines the socket objects of the RPi and the Nuc; used for sending them data
-    RPi = Client(RASPBERRY_PI_IP, RASPBERRY_PI_PORT)
-    Nuc = Client(NUC_IP, NUC_PORT)
+    RPi = Client('192.168.1.102', RASPBERRY_PI_PORT)
+    #Nuc = Client(NUC_IP, NUC_PORT)
 
     #This is intended to continue until it is manually stopped
     while True:
@@ -50,10 +50,10 @@ def main():
         try:
             grabJoystickData()
             RPi.send(data)
-            Nuc.send(data)
+     #       Nuc.send(data)
             sleep(1.0 / rate)
         except KeyboardInterrupt:
-            del RPi, Nuc
+            del RPi#, Nuc
             pygame.quit()
             break
 
