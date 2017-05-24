@@ -12,27 +12,30 @@ def construct_windows():
     figure, (Useless, Ted, Bill)= plt.subplots(3, sharex=True)
     Useless.plot()
     Useless.set_title('useless')
+    Useless.axis('off')
     
     Ted.plot()
     Ted.set_title('ted')
+    Ted.axis('off')
     
     Bill.plot()
     Bill.set_title('bill')
+    Bill.axis('off')
 
     plt.show('all')
 
 
 def plotter(image):
-    global figure, useless, ted, bill
+    #global figure, useless, ted, bill
 
-    img_handle = plt.imshow(image)
+    img_handle = plt.imshow(image, cmap='gray')
     return img_handle
 def callback(name, image):
 
     if name in cameras:
-        img_handle = plotter(image)
-        name.plot(image_handle)
-        plt.show(name)
+        img = plotter(image)
+        name.plot(img)
+        plt.show('all')
 #    #if name in cameras:
 #        #cv2.imshow(name, image)
 #    #if cv2.waitKey(30) == 27:
