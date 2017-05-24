@@ -14,7 +14,7 @@ def callback(name, image):
         return
 
 def main():
-    server = ImageServer(NUC_PORT, callback)
+    server = ImageServer(BASE_COMPUTER_PORT, callback)
     server.start()
 
 #Boilerplate
