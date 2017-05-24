@@ -32,9 +32,9 @@ def handle(data):
 
     #Auger controls; full speed if both are pressed
     if data['button1'] == 1.0:
-        auger.autoGradient(1.0)
+        auger.setSpeed(1.0)
     elif data['button7'] == 1.0:
-        auger.autoGradient(-0.5)
+        auger.setSpeed(-0.5)
     elif data['button9'] == 1.0:
         shakeAuger()
     else:

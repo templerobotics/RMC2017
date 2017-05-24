@@ -290,7 +290,7 @@ class MicrostepStepperMotor:
         self._downDirection = 0 if drillUpDirection == 1 else 1
         self.currentDirection = 0
 
-        PIGPIO_DAEMON.write(self._dirPin, self._direction)
+        PIGPIO_DAEMON.write(self._dirPin, self.currentDirection)
 
         self._wave = wavePWM.PWM(PIGPIO_DAEMON)
 
