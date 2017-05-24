@@ -53,7 +53,7 @@ def main():
             Nuc.send(data)
             sleep(1.0 / rate)
         except KeyboardInterrupt:
-            del RPi, Nuc
+            #del RPi, Nuc
             pygame.quit()
             break
 

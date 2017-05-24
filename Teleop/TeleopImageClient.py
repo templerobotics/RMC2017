@@ -1,5 +1,5 @@
 import cv2
-from turmc.global_constants import NUC_PORT
+from turmc.global_constants import *
 from turmc.networking.image_comm import ImageServer
 
 cameras = ['Useless', 'Bill', 'Ted']

@@ -2,6 +2,7 @@ from turmc.global_constants import *
 from turmc.motor_control.pwm import MicrostepStepperMotor
 from turmc.motor_control.sabertooth_serial import DCMotor, LinearActuator, Drivetrain
 from turmc.networking.joystick import Server
+from time import sleep
 
 #Define all the motor objects
 drivetrain = Drivetrain(SERIAL_ADDR_DRIVETRAIN, swapDriveCommands = True)
@@ -11,6 +12,19 @@ auger = DCMotor(SERIAL_ADDR_OTHER_MOTORS, MOTOR_NUMBER_AUGER)
 conveyorMotor = DCMotor(SERIAL_ADDR_OTHER_MOTORS, MOTOR_NUMBER_CONVEYOR, invertCommands = True) #DO NOT EXCEED SPEED OF 0.5 FOR THIS MOTOR
 drillStepper = MicrostepStepperMotor(DRILL_STEPPER_PUL_PIN, DRILL_STEPPER_DIR_PIN)
 
+def shakeAuger():
+    auger.setSpeed(-0.75)
+    sleep(0.1)
+    auger.setSpeed(0.75)
+    sleep(0.1)
+    auger.setSpeed(-0.75)
+    sleep(0.1)
+    auger.setSpeed(0.75)
+    sleep(0.1)
+    auger.setSpeed(-0.75)
+    sleep(0.1)
+    auger.setSpeed(0.75)
+
 #Callback which handles joystick data from the server
 def handle(data):
     #Updates the drivetrain with the joystick axial input
@@ -18,9 +32,11 @@ def handle(data):
 
     #Auger controls; full speed if both are pressed
     if data['button1'] == 1.0:
-        auger.setSpeed(1.0)
+        auger.autoGradient(1.0)
     elif data['button7'] == 1.0:
-        auger.setSpeed(-0.5)
+        auger.autoGradient(-0.5)
+    elif data['button9'] == 1.0:
+        shakeAuger()
     else:
         auger.stop()
 

@@ -37,7 +37,7 @@ class ImageServer:
             while True:
                 #Receives data; if the timeout expires we save what we have and return to the server loop
                 try:
-                    self._server.settimeout(20)
+                    self._server.settimeout(2)
                     data, address = self._server.recvfrom(self.bufferSize)
                 except timeout:
                     break
@@ -67,7 +67,7 @@ class ImageServer:
             #Attempts to receive metadata about the upcoming image.
             #If metadata is not received within the timeout, we go back to the server loop
             try:
-                self._server.settimeout(20)
+                self._server.settimeout(2)
                 metadata, metaaddress = self._server.recvfrom(self.bufferSize)
                 #We make sure the metadata we received is from the correct address
                 while (metaaddress != address):

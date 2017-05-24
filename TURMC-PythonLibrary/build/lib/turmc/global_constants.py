@@ -38,15 +38,15 @@ PIGPIO_PI_REFERENCE = pigpio.pi() if pigpioLoaded else None
 #=============Networking==============
 
 #The IP address of the Pi
-RASPBERRY_PI_IP = '192.168.1.102'
+RASPBERRY_PI_IP = ''
 RASPBERRY_PI_PORT = 12002
 
 #The IP address of the Nuc
-NUC_IP = '192.168.1.100'
+NUC_IP = ''
 NUC_PORT = 12001
 
 #The IP address of the base computer
-BASE_COMPUTER_IP = '192.168.1.107'
+BASE_COMPUTER_IP = ''
 BASE_COMPUTER_PORT = 12000
 
 #The IP address (and port?) of the ROS Master Node.
