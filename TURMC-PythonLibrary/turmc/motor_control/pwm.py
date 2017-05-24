@@ -335,7 +335,7 @@ class MicrostepStepperMotor:
         self._update()
 
     def setDirection(self, direction, stopOnDirectionChange = True):
-        if not self.currentDirection == direction
+        if not self.currentDirection == direction:
             if stopOnDirectionChange:
                 self.stop()
             PIGPIO_DAEMON.write(self._dirPin, direction)
