@@ -13,6 +13,9 @@ class ImageServer:
 
         self._server = socket(AF_INET, SOCK_DGRAM)
         self._server.bind(('', self._port))
+
+        self._server.settimeout(3)
+
         self.isListening = False
 
     #Closes the server
@@ -21,39 +24,28 @@ class ImageServer:
         self.isListening = False
 
     #Receives an image and sends it to the callback function
-    def _receiveImage(self, metadata, metaaddress):
-        #Attempts to parse the metadata
-        try:
-            metadata = json.loads(metadata)
-        except JSONDecodeError:
-            print("Failed to decode metadata")
-            return
-        #Creates a filepath out of the given name
-        filepath = metadata['name'] + '.jpg'
-        receivedPackets = 0
+    def _receiveImage(self, sourceAddress):
         #Opens a file to write the received data
-        with open(filepath, 'wb+') as handle:
+        with open('temp.jpg', 'wb+') as handle:
             #Loop to keep receiving packets
             while True:
                 #Receives data; if the timeout expires we save what we have and return to the server loop
                 try:
-                    self._server.settimeout(20)
                     data, address = self._server.recvfrom(self.bufferSize)
                 except timeout:
                     break
                 #Ignores packets from different addresses. This shouldn't be necessary, but it's more secure
-                if address == metaaddress:
+                if address == sourceAddress:
                     #A packet of the string 'end' will immediately finish the image
                     if data == 'end':
                         break
                     else:
                         #Writes the received bytes to the file
                         handle.write(data)
-                        receivedPackets += 1
         #Loads the file that was downloaded
         image = cv2.imread(filepath)
         #Sends the image and its name to the callback function
-        self._callback(metadata['name'], image)
+        self._callback(image)
 
     #Listens for an incoming image signal
     def _listen(self):
@@ -64,24 +56,12 @@ class ImageServer:
             return
         #The string 'start' indicates that an image is about to be sent
         if data == 'start':
-            #Attempts to receive metadata about the upcoming image.
-            #If metadata is not received within the timeout, we go back to the server loop
-            try:
-                self._server.settimeout(20)
-                metadata, metaaddress = self._server.recvfrom(self.bufferSize)
-                #We make sure the metadata we received is from the correct address
-                while (metaaddress != address):
-                    metadata, metaaddress = self._server.recvfrom(self.bufferSize)
-            except timeout:
-                return
-            #With metadata received, move on to receiving the actual image
-            self._receiveImage(metadata, metaaddress)
+            self._receiveImage(address)
 
     def start(self):
         self.isListening = True
         while self.isListening:
             self._listen()
-
 
     def stop(self):
         self.isListening = False
@@ -102,14 +82,8 @@ class ImageSender:
     def sendImage(self, image, name, metadata = {}):
         #Writes the image to a temporary file. This is where the image compression occurs
         cv2.imwrite('temp.jpg', image)
-        #Prepares metadata
-        metadata['name'] = name
-        metadata['size'] = os.path.getsize('temp.jpg')
-        metadata['packetcount'] = ceil(metadata['size'] / self.bufferSize)
         #Sends the 'start' signal
         self._client.sendto('start', self._address)
-        #Sends the metadata as a JSON encoded string
-        self._client.sendto(json.dumps(metadata), self._address)
         #Opens the file for sending
         with open('temp.jpg', 'rb') as handle:
             data = handle.read(self.bufferSize)

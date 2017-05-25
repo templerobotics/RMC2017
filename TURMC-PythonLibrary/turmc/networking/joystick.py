@@ -1,16 +1,75 @@
 from socket import *
 from ..tools.textutils import String2Dictionary, Dictionary2String
+from time import sleep
 
 #Creates a Server object for an event based socket system
 class Server():
 
     #Given a port, waits for messages on that channel. Received messages are passed to an event handler
-    def __init__(self, port, eventHandlerCallback, bufferSize = 2048):
+    def __init__(self, port, eventHandlerCallback, bufferSize = 2048, errorCallback = None):
         self._port = port
         self.bufferSize = bufferSize
         self._server = socket(AF_INET, SOCK_DGRAM)
         self._server.bind(('', self._port))
         self.callback = eventHandlerCallback
+        self.errorCallback = errorCallback
+        self.isBlocking = True
+        self.listen = False
+
+    #Stops listening on delete in an attempt to prevent hanging
+    def __del__(self):
+        self._server.close()
+        self.listen = False
+
+    #Configures
+    def setBlocking(self, boolean = True):
+        if boolean:
+            self._server.setblocking(1)
+            self.isBlocking = True
+        else:
+            self._server.setblocking(0)
+            self.isBlocking = False
+
+    #Starts an event loop that passes received data back to an event handler
+    def start(self):
+        self.listen = True
+        while self.listen:
+            try:
+                message, addr = self._server.recvfrom(2048)
+                data = String2Dictionary(message)
+                self.callback(data)
+            except:
+                if not self.errorCallback == None:
+                    self.errorCallback()
+            if not self.isBlocking:
+                sleep(0.01)
+
+    #Flags the server to stop listening after the next reception
+    def stop(self):
+        self.listen = False
+
+    #Legacy handle for start()
+    def startListening(self):
+        self.start()
+
+    #Legacy handle for stop()
+    def stopListening(self):
+        self.stop()
+
+#Creates a Server object for an event based socket system
+class TimeoutServer():
+
+    #Given a port, waits for messages on that channel. Received messages are passed to an event handler
+    def __init__(self, port, eventHandlerCallback, timeoutCallback, timeout, bufferSize = 2048, errorCallback = None):
+        self._port = port
+        self.bufferSize = bufferSize
+        self._server = socket(AF_INET, SOCK_DGRAM)
+        self._server.bind(('', self._port))
+        self.callback = eventHandlerCallback
+        self.errorCallback = errorCallback
+        self.timeoutCallback = timeoutCallback
+        self.timeout = timeout
+        self._server.settimeout(self.timeout)
         self.listen = False
 
     #Stops listening on delete in an attempt to prevent hanging
@@ -22,9 +81,17 @@ class Server():
     def start(self):
         self.listen = True
         while self.listen:
-            message, addr = self._server.recvfrom(2048)
-            data = String2Dictionary(message)
-            self.callback(data)
+            try:
+                self._server.settimeout(self.timeout)
+                message, addr = self._server.recvfrom(self.bufferSize)
+                data = String2Dictionary(message)
+                self.callback(data)
+            except timeout:
+                self.timeoutCallback()
+            except:
+                if not self.errorCallback == None:
+                    self.errorCallback()
+                continue
 
     #Flags the server to stop listening after the next reception
     def stop(self):
