@@ -79,7 +79,7 @@ class ImageSender:
     def __del__(self):
         self._client.close()
 
-    def sendImage(self, image, name, metadata = {}):
+    def sendImage(self, image):
         #Writes the image to a temporary file. This is where the image compression occurs
         cv2.imwrite('temp.jpg', image)
         #Sends the 'start' signal
