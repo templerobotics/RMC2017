@@ -5,18 +5,21 @@ from Queue import Queue
 import threading
 import time
 
-BDTP_SIG = {'EST': chr(124), 'ACK': chr(125), 'REJ': chr(126), 'END': chr(127)}
+BDTP_SIG = {'REQ': chr(124), 'ACK': chr(125), 'REJ': chr(126), 'END': chr(127)}
 
 class BDTP(threading.Thread):
 
-    def __init__(self, ip, port = 27000, bufferSize = 512, establishTimeout = 30):
+    def __init__(self, ip, port = 27000, bufferSize = 1024, establishTimeout = 30):
         threading.Thread.__init__(self)
 
         self.address = (ip, port)
+        self.bufferSize = bufferSize + 1
 
         self.messageQueue = Queue()
-        self.messageAvailableEvent = thread.Event()
-        self.connectionEvent = thread.Event()
+        self.messageAvailableEvent = threading.Event()
+        self.connectionEvent = threading.Event()
+
+        self._alive = True
 
         self._server = socket(AF_INET, SOCK_DGRAM)
         self._server.bind(('', self.address[1]))
@@ -24,7 +27,7 @@ class BDTP(threading.Thread):
         self._client = socket(AF_INET, SOCK_DGRAM)
 
         self._connected = False
-        self.remoteAddress = ('', -1)
+        self.remoteAddress = (self.address[0], -1)
         self.remoteBufferSize = -1
 
         self.start()
@@ -41,7 +44,7 @@ class BDTP(threading.Thread):
             try:
                 data, addr = self._server.recvfrom(self.bufferSize)
                 if self._acceptAddress(addr):
-                    if data = BDTP_SIG['END']:
+                    if data == BDTP_SIG['END']:
                         self._closeConnection()
                     else:
                         self._decode(data)
@@ -58,32 +61,51 @@ class BDTP(threading.Thread):
                 raise err
 
     def _establishConnection(self):
+        print('Establishing connection')
 
-        receivedREQ = False
-        receivedACK = False
+        self.rec_req = False
+        self.rec_ack = False
 
-        myReq = BDTP_SIG['REQ'] + str(self.bufferSize) + str(time.time() % 10)
-        myACK = BDTP_SIG['ACK'] + str(self.bufferSize) + str(time.time() % 10)
+        self.my_ack = BDTP_SIG['ACK'] + str(self.bufferSize)
 
         self._server.settimeout(1.0)
-        self._client.sendto(myREQ, self.address)
+        self._client.sendto(BDTP_SIG['REQ'], self.address)
 
-        while not (receivedACK and receivedREQ):
+        while not self.rec_ack:
             try:
                 message, addr = self._server.recvfrom(self.bufferSize)
             except timeout:
-                if not receivedACK:
-                    self._client.sendto(myREQ, self.address)
-            if not receivedREQ and message[0] == BDTP_SIG['REQ'] and addr[0] == self.address[0]:
-                try:
-                    self.remoteBufferSize = int(message[1:-1])
+                print('Timed out')
+                if not self.rec_req:
+                    print('Sending REQ')
+                    self._client.sendto(BDTP_SIG['REQ'], self.address)
+                elif self.rec_req and not self.rec_ack:
+                    print('Sending REC ACK')
+                    self._client.sendto(self.my_ack, self.address)
+                continue
+            except KeyboardInterrupt:
+                raise KeyboardInterrupt
+
+            print('Received something: {}'.format(message))
+
+            if addr[0] == self.address[0]:
+                if message == BDTP_SIG['REQ']:
+                    self.rec_req = True
                     self.remoteAddress = addr
-                    receivedREQ = True
-                    self._client.sendto(BDTP_SIG['ACK'] + message[1:], self.address)
-                except ValueError:
-                    continue
-            elif not receivedACK and message == myACK:
-                receivedACK = True
+                    print('Sending REC ACK')
+                    self._client.sendto(self.my_ack, self.address)
+                elif message[0] == BDTP_SIG['ACK']:
+                    self.remoteBufferSize = message[1:]
+                    self.remoteAddress = addr
+                    self.rec_ack = True
+                    self._client.sendto(self.my_ack, self.address)
+
+            if not self.rec_req:
+                print('Sending REQ')
+                self._client.sendto(BDTP_SIG['REQ'], self.address)
+            elif self.rec_req and not self.rec_ack:
+                print('Sending REC ACK')
+                self._client.sendto(self.my_ack, self.address)
 
         self._connected = True
         self._server.settimeout(None)
@@ -96,7 +118,7 @@ class BDTP(threading.Thread):
         total = 0
         for letter in string:
             total += ord(letter)
-        return chr(total)
+        return chr(total % 256)
 
     def _encode(self, message):
         return message + self._checksum(message)
@@ -109,11 +131,11 @@ class BDTP(threading.Thread):
                 self.messageAvailableEvent.set()
 
     def isSendable(self, data):
-        string = repr(data).replace(' ', '')
+        string = repr(data)
         return len(string) < self.remoteBufferSize
 
     def send(self, data):
-        string = repr(data).replace(' ', '')
+        string = repr(data)
         if len(string) < self.remoteBufferSize:
             self._client.sendto(self._encode(string), self.address)
         else:
@@ -124,3 +146,6 @@ class BDTP(threading.Thread):
             return self.messageQueue.get_nowait()
         except:
             return None
+
+    def close(self):
+        self._alive = False
