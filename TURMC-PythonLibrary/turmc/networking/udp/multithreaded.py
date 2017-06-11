@@ -1,4 +1,3 @@
-from ast import literal_eval
 from Queue import *
 from socket import *
 import threading
@@ -32,10 +31,16 @@ class Server(threading.Thread):
         self.listen = True
         while self._alive:
             if self.listen:
-                message, addr = self._socket.recvfrom(self.bufferSize)
+                try:
+                    message, addr = self._socket.recvfrom(self.bufferSize)
+                except error as e:
+                    if e[0] == errno.EMSGSIZE:
+                        continue
+                    else:
+                        raise e
                 try:
                     #Evaluates the message as python code and puts it in the messageQueue
-                    self.messageQueue.put_nowait(literal_eval(message))
+                    self._receive(message)
                     self.messageOverflowEvent.clear()
                 except Full:
                     self.messageOverflowEvent.set()
@@ -44,6 +49,10 @@ class Server(threading.Thread):
             else:
                 self.messageAvailableEvent.set()
         self._socket.close()
+
+    #Puts the message into the messageQueue
+    def _receive(self, message):
+        self.messageQueue.put_nowait(message)
 
     #Flags the Server to shutdown on the next pass. Irreversible.
     def kill(self):
@@ -55,7 +64,7 @@ class StackingServer(Server):
     #Takes in a port to listen on. Received messages will be put in a LiFo queue
     def __init__(self, port, bufferSize = 2048, queueMaxSize = -1, bindAddress = ''):
         Server.__init__(self, port, bufferSize, queueMaxSize, bindAddress)
-        self.messageQueue = LiFoQueue(maxsize = queueMaxSize)
+        self.messageQueue = LifoQueue(maxsize = queueMaxSize)
 
 #Creates a Server object for a multithreaded socket system. Messages are put into a priority queue
 class PriorityServer(Server):
@@ -64,6 +73,11 @@ class PriorityServer(Server):
     def __init__(self, port, bufferSize = 2048, queueMaxSize = -1, bindAddress = ''):
         Server.__init__(self, port, bufferSize, queueMaxSize, bindAddress)
         self.messageQueue = PriorityQueue(maxsize = queueMaxSize)
+
+    #Retrieves the embedded priorityPuts the message into the messageQueue
+    def _receive(self, message):
+        priority = ord(message[0])
+        self.messageQueue.put_nowait((priority, message[1:]))
 
 #Creates a Client object for a multithreaded socket system. Messages are put into a FiFo queue
 class Client(threading.Thread):
@@ -88,17 +102,24 @@ class Client(threading.Thread):
     def run(self):
         while self._alive:
             try:
-                data = self.messageQueue.get(timeout = 1)
+                message = self._getMessage()
                 self.busyEvent.set()
-                message = repr(data).replace(' ', '')
                 self._socket.sendto(message, self._address)
                 self.messageQueue.task_done()
             except Empty:
                 self.busyEvent.clear()
         self._socket.close()
 
+    #Attempt to grab a message in the queue
+    def _getMessage(self):
+        return self.messageQueue.get(timeout = 1)
+
     #Function wrapper to enqueue data to be sent
-    def queueToSend(data):
+    #An optional priority number can be embedded into the message for reception by PriorityServer objects.
+    #Do not specify a priority if sending to a non-priority server
+    def queueToSend(self, data, serverPriority = None):
+        if serverPriority is not None:
+            data = chr(serverPriority % 256) + data
         self.messageQueue.put_nowait(data)
 
     #Flags the Server to shutdown on the next pass. Irreversible.
@@ -111,7 +132,7 @@ class StackingClient(Client):
     #Takes in an IP address and port to send data to
     def __init__(self, ip, port):
         Client.__init__(self, ip, port)
-        self.messageQueue = LiFoQueue()
+        self.messageQueue = LifoQueue()
 
 #Creates a Client object for a multithreaded socket system. Messages are put into a priority queue
 class PriorityClient(Client):
@@ -120,3 +141,13 @@ class PriorityClient(Client):
     def __init__(self, ip, port):
         Client.__init__(self, ip, port)
         self.messageQueue = PriorityQueue()
+
+    #Attempt to grab a message in the queue
+    def _getMessage(self):
+        _, data = self.messageQueue.get(timeout = 1)
+        return data
+
+    def queueToSend(self, data, sendPriority = -1, serverPriority = None):
+        if serverPriority is not None:
+            data = chr(serverPriority % 256) + data
+        self.messageQueue.put_nowait((sendPriority, data))
