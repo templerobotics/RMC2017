@@ -35,7 +35,7 @@ def handle(data):
 
 #Starts up a server listening on the RPi port
 def main():
-    server = JSONServer(RASPBERRY_PI_PORT, handle)
+    server = JSONServer(27000, handle)
     server.start()
 
 #Boilerplate
