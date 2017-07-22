@@ -9,6 +9,13 @@ drivetrain = Drivetrain(128)
 armActuator = LinearActuator(129, 1)
 bucketActuators = LinearActuator(129, 2)
 
+pi = PIGPIO_PI_REFERENCE
+pi.set_mode(4, 0)
+pi.write(4, 0)
+
+def limitSwitchActivated():
+    return pi.read(4)
+
 #Callback which handles joystick data from the server
 def handle(data):
     #Updates the drivetrain with the joystick axial input
@@ -26,7 +33,7 @@ def handle(data):
 
     #Bucket actuator controls; retracts if both are pressed
     if 'bucket' in data:
-        if data['bucket'] == -1.0:
+        if data['bucket'] == -1.0 and not limitSwitchActivated():
             conveyorActuator.retract()
         elif data['bucket'] == 1.0:
             conveyorActuator.extend()
