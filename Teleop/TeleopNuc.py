@@ -20,7 +20,7 @@ stepper = CameraStepper()
 #Creates an ImageSender object pointing at the base computer
 imageSender = ImageSender(BASE_COMPUTER_IP, BASE_COMPUTER_PORT)
 
-def sendImage(cameraName, grayscale = True, metadata = {}):
+def sendImage(cameraName, grayscale, metadata = {}):
     if cameraName == 'Useless':
         _, frame = USELESS.read()
     elif cameraName == 'Bill':
@@ -29,28 +29,26 @@ def sendImage(cameraName, grayscale = True, metadata = {}):
         _, frame = TED.read()
     else:
         return
-    if grayscale:
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    imageSender.sendImage(frame, cameraName, metadata)
+    imageSender.sendImage(frame, cameraName, 50, 100, grayscale, metadata)
 
 def handle(data):
     #Sends an image from Useless
     if data['button10'] == 1.0 and not justSentUseless:
-        sendImage('Useless')
+        sendImage('Useless',True)
         justSentUseless = True
     elif data['button10'] == 0.0 and justSentUseless:
         justSentUseless = False
 
     #Sends an image from Bill
     if data['button11'] == 1.0 and not justSentBill:
-        sendImage('Bill')
+        sendImage('Bill', True)
         justSentBill = True
     elif data['button11'] == 0.0 and justSentBill:
         justSentBill = False
 
     #Sends an image from Ted
     if data['button12'] == 1.0 and not justSentTed:
-        sendImage('Ted', metadata = {'position': stepper.getPosition(), 'bearing': stepper.getBearing()})
+        sendImage('Ted', True, metadata = {'position': stepper.getPosition(), 'bearing': stepper.getBearing()})
         justSentTed = True
     elif data['button12'] == 0.0 and justSentTed:
         justSentTed = False
