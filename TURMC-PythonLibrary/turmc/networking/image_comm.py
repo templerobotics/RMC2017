@@ -87,8 +87,6 @@ class ImageSender:
         """Returns Compressed Image
         Write edited image to file, followed by progressive compression and
         zapped into the network
-
-
         """
     def sendImage(self, cvimage, quality, scale, grayscale, metadata):
         #Writes the image to a temporary file. This is where the image compression occurs
@@ -110,10 +108,7 @@ class ImageSender:
     """Saves progressive jpg from opencv mat object
 
     Takes opencv mat frame, performs compressions and size reduction and saves as a progressive jpeg
-
-
     """
-
     def convertProgressive(self, cvimage, quality, scale, grayscale):
         #map cvimage mat frame object to RGB
         cv_img = cv2.cvtColor(cvimage, cv2.COLOR_BGR2RGB)
