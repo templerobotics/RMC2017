@@ -1,5 +1,5 @@
 from turmc.global_constants import *
-from turmc.motor_control.sabertooth_serial import LinearActuator, Drivetrain
+from turmc.motor_control.sabertooth_serialx32 import LinearActuator, Drivetrain
 from turmc.networking.joystick import JSONServer
 from time import sleep
 
