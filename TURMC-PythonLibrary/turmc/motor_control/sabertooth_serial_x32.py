@@ -129,7 +129,7 @@ class SPSI(threading.Thread):
 
         data = [chr(i) for i in data] #Convert ints to bytes
         dataString = ''.join(data) + chr(dataChecksum) #Concatenate data bytes into bytes array
-        commandString = chr(address) + chr(command) + chr(commandValue) + chr(dataChecksum) + dataString #Concatenate full command string
+        commandString = chr(address) + chr(command) + chr(commandValue) + chr(commandChecksum) + dataString + chr(dataChecksum) #Concatenate full command string
 
         #Write the command
         self.com.write(commandString)
