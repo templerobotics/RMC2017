@@ -73,6 +73,7 @@ REPLY_VALUES = {0: 'VALUE',
 class SPSI(threading.Thread):
 
     def __init__(self, port):
+        super(SPSI, self).__init__()
 
         #Serial output
         self.com = serial.Serial(port, baudrate = 9600, timeout = 1)
@@ -88,6 +89,7 @@ class SPSI(threading.Thread):
         self.com.close()
 
     def run(self):
+        self._alive = True
         while self._alive:
             response = self.com.read(6)
             if len(response) == 6 and response[0] == REPLY_SIG:
@@ -100,21 +102,21 @@ class SPSI(threading.Thread):
             sleep(0.5)
 
     #Splits integer across 2 bytes
-    def _splitValue(value):
+    def _splitValue(self, value):
         lead = (value >> 0) & 127
         tail = (value >> 7) & 127
         return lead, tail
 
     #Joins a split response value into a single value
-    def _joinValue(byte1, byte2, negative = False):
+    def _joinValue(self, byte1, byte2, negative = False):
         return byte1 + (byte2 << 7) if not negative else -(byte1 + (byte2 << 7))
 
     #Expands value from [-1.0f, 1.0f] to [-2047L, 2047L]
-    def _expandValue(value):
+    def _expandValue(self, value):
         return int(2047 * value)
 
     #Shrinks value from [-2047L, 2047L] to [-1.0f, 1.0f]
-    def _shrinkValue(value):
+    def _shrinkValue(self, value):
         return float(value / 2047)
 
     #Sends the packet along with a checksum
@@ -166,6 +168,8 @@ class SPSI(threading.Thread):
                 return value
         else:
             return None
+
+_spsi = SPSI('/dev/ttyS0')
 
 class Motor:
 
@@ -219,7 +223,7 @@ class Motor:
         self.speed = speed
 
         #Sends the speed command
-        self.com.set(self.address, self._motor, speed)
+        self.com.set(self._address, self._motor, speed)
 
     def setThrottle(self, throttle = 1.0):
         '''Sets the max power of the motor. Input should be in range [0.0, 1.0]'''
@@ -311,7 +315,7 @@ class Drivetrain:
 
     def __del__(self):
         '''Stops the motor'''
-        self.setSpeed(0.0)
+        self._setSpeed(0.0)
 
     def _convertValue(self, value):
         '''Converts value from range [0.0, 1.0] to [-1.0, 1.0] for the packet values'''
@@ -432,8 +436,9 @@ class Drivetrain:
         return value
 
 def init():
-    global _spsi
-    _spsi = SPSI('/dev/ttyS0')
+    #global _spsi
+    #_spsi = SPSI('/dev/ttyS0')
+    print('Nothing to see here')
 
 if __name__ == 'sabertooth_serial_alt32':
     init()
