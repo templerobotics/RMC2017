@@ -440,5 +440,5 @@ def init():
     #_spsi = SPSI('/dev/ttyS0')
     print('Nothing to see here')
 
-if __name__ == 'sabertooth_serial_alt32':
+if __name__ == 'sabertooth_serial_x32':
     init()

@@ -24,3 +24,4 @@ TURMC-PythonLibrary/dist/TURMC_PythonLibrary-1.0.10-py2.7.egg
 TURMC-PythonLibrary/dist/TURMC_PythonLibrary-1.0.11-py2.7.egg
 TURMC-PythonLibrary/build/lib/turmc/motor_control/__init__.py
 *.pyc
+*.egg
