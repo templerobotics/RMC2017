@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name="TURMC-PythonLibrary",
-      version="1.0.14",
+      version="1.0.21",
       description="A library of code used by Temple Robotics team",
       author="Brian Amin, Sam Wilson",
       url="www.github.com/templerobotics/main",

@@ -41,7 +41,7 @@ def grabJoystickData():
 def main():
 
     #Defines the socket objects of the RPi and the Nuc; used for sending them data
-    RPi = JSONClient('192.168.1.102', 27000)
+    RPi = JSONClient('192.168.42.1', 27000)
 
     #This is intended to continue until it is manually stopped
     while True:
