@@ -2,6 +2,7 @@ import cv2
 from .. import global_constants as gc
 import urllib2
 import time
+import numpy as np
 
 IP_CAMERA_COMMANDS = {'STOP' = 1,
                       'UP' = 0,
@@ -46,7 +47,7 @@ class EasyN_IPCamera:
         self.conn = urllib2.build_opener(handler)
 
         self._url_snapshot = 'http://{address}/snapshot.cgi'.format(address = self.address)
-        self._url_command = 'http://{address}?username={username}&password={password}&command='.format(address = self.address, username = self.username, password = self.password) + '{command}'
+        self._url_command = 'http://{address}/decoder_control.cgi?username={username}&password={password}&command='.format(address = self.address, username = self.username, password = self.password) + '{command}'
 
     def read(self):
         try:
