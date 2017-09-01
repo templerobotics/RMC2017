@@ -20,8 +20,8 @@ data = {}
 #Updates the joystick dictionary with the current joystick values
 def grabJoystickData():
     pygame.event.get()
-    data["x"] = j.get_axis(0)
-    data["y"] = j.get_axis(1)
+    data["x"] = j.get_axis(0) * 0.9
+    data["y"] = j.get_axis(1) * 0.9
 
     if j.get_button(2) == 1.0:
         data['bucket'] = -1.0
