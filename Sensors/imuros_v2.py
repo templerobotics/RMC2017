@@ -16,7 +16,7 @@ imu_pub = rospy.Publisher('Imu/imuTopic', Imu ,queue_size=500)
 rate = rospy.Rate(1000)
 sense.set_imu_config(False, True, True)
 
-
+#comment
 
 
 
